@@ -1,0 +1,190 @@
+/*
+  Navbar.css
+  Navbar bileşenine ait tüm stiller burada.
+  CSS Modules kullandığımız için bu sınıf isimleri
+  sadece Navbar.jsx'e aittir, başka component'leri etkilemez.
+  (Örneğin başka bir yerde .nav-link yazsak çakışmaz.)
+*/
+
+/* ── ANA NAV KABI ──────────────────────────────────────────── */
+.navbar {
+  position: fixed;            /* Sayfa kaydırılsa da üstte kalır */
+  top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  z-index: 1000;              /* Her şeyin üstünde */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+
+/* JavaScript ile eklenen sınıf: scroll edilince arka plan değişir */
+.navbar.scrolled {
+  background: rgba(6, 24, 36, 0.92);
+  backdrop-filter: blur(14px);           /* Cam efekti */
+  -webkit-backdrop-filter: blur(14px);   /* Safari için */
+  box-shadow: 0 2px 30px rgba(0,0,0,0.25);
+}
+
+/* Sayfa top'undayken şeffaf — hero görüntüsü görünsün */
+.navbar:not(.scrolled) {
+  background: transparent;
+}
+
+
+/* ── LOGO ──────────────────────────────────────────────────── */
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--cream);
+  /* Link olarak kullanılacak, hover efekti */
+  transition: color var(--transition);
+}
+.nav-logo:hover {
+  color: var(--gold-light);
+}
+
+
+/* ── MASAÜSTÜ LİNKLER ──────────────────────────────────────── */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav-link {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(244, 232, 208, 0.8);
+  padding-bottom: 3px;
+  /* Altı çizgi efekti için: alttan border */
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition), border-color var(--transition);
+}
+
+.nav-link:hover,
+.nav-link.active {    /* React Router aktif sayfaya .active ekler */
+  color: var(--gold-light);
+  border-bottom-color: var(--gold);
+}
+
+
+/* ── HAMBURGEr BUTONU (Mobil) ──────────────────────────────── */
+/*
+  Masaüstünde gizli, mobilde görünür.
+  Üç çizgiden oluşur — CSS ile çizilir, resim kullanılmaz.
+  Açıkken "X" şekline dönüşür (transform ile).
+*/
+.hamburger {
+  display: none;              /* Masaüstünde gizli */
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1100;              /* Mobil menünün üstünde */
+}
+
+/* Her çizgi bir <span> */
+.hamburger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--cream);
+  border-radius: 2px;
+  transition: transform 0.35s ease, opacity 0.25s ease, width 0.25s ease;
+  transform-origin: center;
+}
+
+/* Açık hâlde: X animasyonu */
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+  width: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+
+/* ── MOBİL AÇILIR MENÜ ─────────────────────────────────────── */
+/*
+  Normalde ekranın üstünde gizli (translateY(-100%)).
+  .open sınıfı eklenince aşağı kayarak görünür olur.
+  Bu bir CSS geçiş animasyonudur — JS sadece sınıf ekler/çıkarır.
+*/
+.mobile-menu {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0; right: 0;
+  background: rgba(6, 24, 36, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 2rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  /* Başlangıçta gizli */
+  transform: translateY(-110%);
+  opacity: 0;
+  pointer-events: none; /* Gizliyken tıklanamaz */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+  z-index: 999;
+}
+
+/* JS bu sınıfı ekleyince menü açılır */
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-link {
+  font-size: 1.4rem;
+  font-family: var(--font-display);
+  font-weight: 300;
+  color: var(--cream);
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(200, 150, 62, 0.15);
+  letter-spacing: 0.05em;
+  transition: color var(--transition), padding-left var(--transition);
+}
+
+.mobile-link:hover,
+.mobile-link.active {
+  color: var(--gold-light);
+  padding-left: 0.5rem;
+}
+
+.mobile-link:last-child {
+  border-bottom: none;
+}
+
+
+/* ── RESPONSIVE ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1.5rem;
+  }
+
+  /* Masaüstü linkleri gizle */
+  .nav-links {
+    display: none;
+  }
+
+  /* Hamburger butonu göster */
+  .hamburger {
+    display: flex;
+  }
+}

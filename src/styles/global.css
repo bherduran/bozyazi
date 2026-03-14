@@ -1,0 +1,171 @@
+/*
+  global.css — Tüm uygulamada geçerli stiller
+  Bu dosya main.jsx'te bir kez import edilir, her yerde etkilidir.
+*/
+
+/* ── 1. CSS CUSTOM PROPERTIES (Değişkenler) ──────────────────
+   Renkleri, aralıkları tek yerden yönetiyoruz.
+   İleride "koyu tema" eklemek istersen sadece bu değerleri
+   değiştirmen yeter.
+   ─────────────────────────────────────────────────────────── */
+:root {
+  /* Renkler */
+  --sea:        #0a2540;
+  --deep:       #061824;
+  --azure:      #1a6b8a;
+  --gold:       #c8963e;
+  --gold-light: #e8b86d;
+  --sand:       #f4e8d0;
+  --cream:      #faf6ef;
+  --text:       #1a1208;
+  --muted:      #6b5a3e;
+
+  /* Tipografi */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'Josefin Sans', sans-serif;
+
+  /* Navbar yüksekliği — birden fazla yerde kullanılıyor */
+  --nav-height: 72px;
+
+  /* Geçiş süresi */
+  --transition: 0.3s ease;
+}
+
+
+/* ── 2. RESET ─────────────────────────────────────────────────
+   Her tarayıcı kendi varsayılan stillerini getirir.
+   Bunları sıfırlayarak sıfırdan başlıyoruz.
+   ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box; /* padding dahil genişlik hesabı */
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px; /* 1rem = 16px */
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--cream);
+  color: var(--text);
+  overflow-x: hidden;
+  /* Fixed navbar nedeniyle içerik arkasında kalmasın */
+  padding-top: var(--nav-height);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a { text-decoration: none; color: inherit; }
+ul, ol { list-style: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+
+
+/* ── 3. YARDIMCI SINIFLAR (Utility Classes) ──────────────────
+   Tekrar kullanılabilir küçük sınıflar.
+   Tailwind CSS'in yaptığı şeyin küçük versiyonu.
+   ─────────────────────────────────────────────────────────── */
+
+/* Bölüm etiket satırı: "— Hakkında" gibi küçük başlıklar */
+.section-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.section-label::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+/* Büyük bölüm başlıkları */
+.section-title {
+  font-family: var(--font-display);
+  /* clamp(min, tercih, max) — ekran boyutuna göre ölçeklenir */
+  font-size: clamp(2rem, 4.5vw, 3.8rem);
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--sea);
+}
+.section-title em {
+  font-style: italic;
+  color: var(--azure);
+}
+.section-title--light {
+  color: var(--cream);
+}
+.section-title--light em {
+  color: var(--gold-light);
+}
+
+/* Standart bölüm padding'i */
+.section-padding {
+  padding: 5rem 6rem;
+}
+
+/* İki sütunlu grid */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Altın rengi vurgu çizgisi */
+.gold-bar {
+  width: 60px;
+  height: 3px;
+  background: var(--gold);
+  margin: 1.5rem 0;
+}
+
+/* Fade-in animasyonu — sayfa yüklenince elementlere uygulanır */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeUp 0.8s ease forwards;
+}
+
+
+/* ── 4. RESPONSIVE YARDIMCILARI ──────────────────────────────
+   Medya sorguları breakpoint'leri:
+   - Mobil:   < 768px
+   - Tablet:  768px – 1024px
+   - Masaüstü: > 1024px
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .section-padding {
+    padding: 4rem 3rem;
+  }
+  .two-col {
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: var(--nav-height);
+  }
+  .section-padding {
+    padding: 3.5rem 1.5rem;
+  }
+  .two-col {
+    /* Tablette/mobilde tek sütuna düşer */
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}

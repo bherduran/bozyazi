@@ -1,0 +1,232 @@
+/* Gallery.css */
+
+.gallery-page { min-height: 100vh; }
+
+/* ── GALERİ GRİDİ ──────────────────────────────────────────── */
+.gallery-section { background: var(--sand); }
+
+.gallery-grid {
+  display: grid;
+  /* auto-fill: mevcut genişliği minmax ile böler, sütun sayısı otomatik */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 4px;
+}
+
+.gallery-item {
+  position: relative;
+  aspect-ratio: 4 / 3;   /* Her kart 4:3 oranında — CSS ile sabit */
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* Görseli kırparak kutucuğa sığdır */
+  transition: transform 0.5s ease;
+  display: block;
+}
+.gallery-item:hover img { transform: scale(1.07); }
+
+/* Üzerine gelince kararan overlay */
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(6,24,36,.75) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  display: flex;
+  align-items: flex-end;
+  padding: 1.2rem;
+}
+.gallery-item:hover .gallery-overlay { opacity: 1; }
+
+.gallery-caption {
+  font-size: .7rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+/* ── PLACEHOLDER (Fotoğraf yokken) ────────────────────────── */
+.gallery-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--sea);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  transition: background var(--transition);
+}
+.gallery-item:hover .gallery-placeholder { background: var(--azure); }
+
+.placeholder-icon { font-size: 2rem; opacity: .4; }
+.placeholder-num {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: rgba(200,150,62,.3);
+  line-height: 1;
+}
+.placeholder-text {
+  font-size: .6rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(244,232,208,.25);
+}
+
+/* ── EKLE İPUCU ────────────────────────────────────────────── */
+.gallery-hint {
+  margin-top: 3rem;
+  padding: 1.5rem 2rem;
+  background: rgba(10,37,64,.06);
+  border-left: 3px solid var(--gold);
+}
+.gallery-hint p {
+  font-size: .78rem;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.gallery-hint code {
+  background: rgba(10,37,64,.1);
+  padding: .15rem .45rem;
+  border-radius: 3px;
+  font-size: .75rem;
+  color: var(--sea);
+  font-family: 'Courier New', monospace;
+}
+
+/* ── LİGHTBOX ──────────────────────────────────────────────── */
+/*
+  position: fixed + inset: 0 → Tam ekranı kaplar.
+  z-index: 2000 → Navbar'ın (1000) da üstünde.
+  Arka plana tıklanınca kapanır (JS ile).
+*/
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(6, 24, 36, 0.96);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Animasyon: hafifçe beliriyor */
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightbox-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.lightbox-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lightbox-content img {
+  max-width: 80vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border: 1px solid rgba(200,150,62,.15);
+}
+
+.lightbox-placeholder {
+  width: 60vw;
+  height: 40vh;
+  background: var(--sea);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.lightbox-placeholder span { font-size: 3rem; opacity: .3; }
+.lightbox-placeholder p {
+  font-size: .75rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(244,232,208,.3);
+}
+
+.lightbox-caption {
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(244,232,208,.55);
+}
+
+.lightbox-counter {
+  font-size: .62rem;
+  letter-spacing: .25em;
+  color: rgba(200,150,62,.6);
+}
+
+/* Kapat butonu */
+.lightbox-close {
+  position: absolute;
+  top: -3rem;
+  right: 0;
+  font-size: 2rem;
+  color: rgba(244,232,208,.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: color var(--transition);
+  padding: .25rem .5rem;
+}
+.lightbox-close:hover { color: var(--cream); }
+
+/* Önceki / Sonraki butonları */
+.lightbox-nav {
+  font-size: 3rem;
+  color: rgba(244,232,208,.4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 1rem;
+  transition: color var(--transition), transform var(--transition);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.lightbox-nav:hover { color: var(--gold-light); }
+.lightbox-nav--prev:hover { transform: translateX(-4px); }
+.lightbox-nav--next:hover { transform: translateX(4px); }
+
+/* ── RESPONSIVE ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 3px;
+  }
+  .lightbox-inner {
+    flex-direction: column;
+    gap: .5rem;
+  }
+  .lightbox-content img {
+    max-width: 95vw;
+    max-height: 70vh;
+  }
+  .lightbox-nav {
+    font-size: 2rem;
+    padding: .5rem;
+  }
+}
