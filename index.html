@@ -1,36 +1,52 @@
 <!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bozyazı — Toroslar'ın Denizle Buluştuğu Yer</title>
-    <meta name="description" content="Mersin'in gizli cenneti Bozyazı — antik kentler, berrak Akdeniz ve Toros dağları." />
 
-    <!--
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bozyazı — Toroslar'ın Denizle Buluştuğu Yer</title>
+  <meta name="description"
+    content="Mersin'in gizli cenneti Bozyazı — antik kentler, berrak Akdeniz ve Toros dağları." />
+
+  <!--
       Google Fonts: Tarayıcı bu fontları Google sunucularından indirir.
       Cormorant Garamond → Başlıklar için zarif, serif bir font
       Josefin Sans       → Gövde metni için geometrik, okunabilir
     -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@200;300;400&display=swap"
-      rel="stylesheet"
-    />
-    <script type="module" crossorigin src="/bozyazi/assets/index-giWsGkt9.js"></script>
-    <link rel="stylesheet" crossorigin href="/bozyazi/assets/index-BadwxQSk.css">
-  </head>
-  <body>
-    <!--
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@200;300;400&display=swap"
+    rel="stylesheet" />
+  <script>
+    // GitHub Pages SPA fix - redirect restore
+    (function (l) {
+      if (l.search[1] === '/') {
+        var decoded = l.search.slice(1).split('&').map(function (s) {
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+          l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
+  </script>
+  <script type="module" crossorigin src="/bozyazi/assets/index-giWsGkt9.js"></script>
+  <link rel="stylesheet" crossorigin href="/bozyazi/assets/index-BadwxQSk.css">
+</head>
+
+<body>
+  <!--
       id="root" → React tüm bileşenlerini bu <div>'in içine render eder.
       Sayfa açıldığında bu div boştur; React JS yüklenince doldurur.
       Bu SPA'nın temelidir: tek HTML dosyası, içeriği JS yönetir.
     -->
-    <div id="root"></div>
+  <div id="root"></div>
 
-    <!--
+  <!--
       type="module" → Modern JS modül sistemi (import/export kullanabilirsin)
       Vite bu dosyayı işleyip tarayıcıya sunar.
     -->
-  </body>
+</body>
+
 </html>
