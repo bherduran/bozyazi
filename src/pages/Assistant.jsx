@@ -1,18 +1,6 @@
-// Assistant.jsx — Bozyazı AI Rehberi
-//
-// Bu sayfa şunları öğretir:
-// 1. fetch API — tarayıcıdan HTTP isteği atmak
-// 2. async/await — asenkron işlemler
-// 3. useState ile sohbet geçmişi yönetimi
-// 4. useRef ile otomatik scroll
-// 5. Gemini API entegrasyonu
-
 import { useState, useRef, useEffect } from 'react'
 import '../styles/Assistant.css'
 
-// ── SİSTEM PROMPTU ────────────────────────────────────────────
-// Bu metin chatbot'a kimliğini ve görevini tanımlar.
-// Ne kadar detaylı olursa, cevaplar o kadar iyi olur.
 const SYSTEM_PROMPT = `Sen Bozyazı'nın resmi dijital rehberisisin. Adın "Bozyazı Rehberi".
 
 Bozyazı hakkında bilmen gerekenler:
@@ -32,94 +20,66 @@ Kuralların:
 4. Kısa, samimi ve bilgilendirici ol
 5. Gerektiğinde emoji kullan ama abartma`
 
-// ── BAŞLANGIÇ MESAJI ──────────────────────────────────────────
 const INITIAL_MESSAGE = {
   role: 'assistant',
   text: 'Merhaba! Ben Bozyazı Rehberi 🌊 Bozyazı hakkında merak ettiğin her şeyi sorabilirsin — gezilecek yerler, ulaşım, konaklama, yerel lezzetler... Nasıl yardımcı olabilirim?',
 }
 
 export default function Assistant() {
-  // messages: Tüm sohbet geçmişi — her mesaj {role, text} formatında
-  // role: 'user' veya 'assistant'
   const [messages, setMessages] = useState([INITIAL_MESSAGE])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-
-  // Son mesaja otomatik scroll için
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Yeni mesaj gelince en alta scroll et
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // ── MESAJ GÖNDER ───────────────────────────────────────────
   async function sendMessage() {
     const trimmed = input.trim()
     if (!trimmed || isLoading) return
 
-    // Kullanıcı mesajını ekle
-    const userMessage = { role: 'user', text: trimmed }
-    setMessages(prev => [...prev, userMessage])
+    setMessages(prev => [...prev, { role: 'user', text: trimmed }])
     setInput('')
     setIsLoading(true)
     setError(null)
 
     try {
-      // Gemini API'ye gönderilecek sohbet geçmişi formatı
-      // Gemini "contents" dizisi bekliyor: [{role, parts: [{text}]}]
-      // Sohbet geçmişini hazırla — ilk assistant mesajını atla
-const history = messages
-  .filter(m => m.role !== 'system')
-  .slice(1) // ← İlk karşılama mesajını atla
-  .map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.text }],
-  }))
+      // Geçmiş mesajları Gemini formatına çevir (ilk karşılama mesajını atla)
+      const history = messages
+        .slice(1)
+        .map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.text }],
+        }))
 
-    
-
-      // fetch: Tarayıcının HTTP isteği atma API'si
-      // async/await: Promise'i bekle, sonucu al
       const response = await fetch(
-        // Bunu kullan:
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=...`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${import.meta.env.VITE_GEMINI_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-  contents: [
-    {
-      role: 'user',
-      parts: [{ text: SYSTEM_PROMPT }],
-    },
-    {
-      role: 'model',
-      parts: [{ text: 'Anladım, Bozyazı Rehberi olarak yardımcı olacağım.' }],
-    },
-    ...history,
-    {
-      role: 'user',
-      parts: [{ text: trimmed }],
-    },
-  ],
-  generationConfig: {
-    temperature: 0.7,
-    maxOutputTokens: 500,
-  },
-}),
+            contents: [
+              { role: 'user',  parts: [{ text: SYSTEM_PROMPT }] },
+              { role: 'model', parts: [{ text: 'Anladım, Bozyazı Rehberi olarak yardımcı olacağım.' }] },
+              ...history,
+              { role: 'user',  parts: [{ text: trimmed }] },
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 500,
+            },
+          }),
+        }
+      )
 
-      // HTTP hatası kontrolü
       if (!response.ok) {
-  throw new Error(`API hatası: ${response.status}`)
-}
+        throw new Error(`API hatası: ${response.status}`)
+      }
 
       const data = await response.json()
-
-      // Gemini'nin cevabı bu yapıda geliyor:
-      // data.candidates[0].content.parts[0].text
       const assistantText = data.candidates?.[0]?.content?.parts?.[0]?.text
         ?? 'Üzgünüm, bir sorun oluştu. Tekrar dener misin?'
 
@@ -129,14 +89,11 @@ const history = messages
       console.error('Gemini API hatası:', err)
       setError('Bağlantı hatası oluştu. Lütfen tekrar dene.')
     } finally {
-      // Hata da olsa yükleniyor durumunu kapat
       setIsLoading(false)
-      // Input'a fokuslan
       inputRef.current?.focus()
     }
   }
 
-  // Enter tuşuna basınca gönder (Shift+Enter = yeni satır)
   function handleKeyDown(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -161,22 +118,13 @@ const history = messages
 
       <section className="chat-section section-padding">
         <div className="chat-container">
-
-          {/* ── MESAJLAR ── */}
           <div className="chat-messages">
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`chat-message chat-message--${msg.role}`}
-              >
-                {/* Avatar */}
+              <div key={i} className={`chat-message chat-message--${msg.role}`}>
                 <div className="chat-avatar">
                   {msg.role === 'assistant' ? '🌊' : '👤'}
                 </div>
-
-                {/* Mesaj baloncuğu */}
                 <div className="chat-bubble">
-                  {/* Metni satırlara böl — \n karakterlerini <br> yap */}
                   {msg.text.split('\n').map((line, j) => (
                     <span key={j}>
                       {line}
@@ -187,7 +135,6 @@ const history = messages
               </div>
             ))}
 
-            {/* Yükleniyor animasyonu */}
             {isLoading && (
               <div className="chat-message chat-message--assistant">
                 <div className="chat-avatar">🌊</div>
@@ -199,16 +146,10 @@ const history = messages
               </div>
             )}
 
-            {/* Hata mesajı */}
-            {error && (
-              <div className="chat-error">{error}</div>
-            )}
-
-            {/* Bu div'e scroll edilir */}
+            {error && <div className="chat-error">{error}</div>}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* ── INPUT ALANI ── */}
           <div className="chat-input-area">
             <textarea
               ref={inputRef}
@@ -230,10 +171,9 @@ const history = messages
             </button>
           </div>
 
-          {/* Örnek sorular */}
           <div className="chat-suggestions">
             {[
-              'Bozyazı\'ya nasıl gidebilirim?',
+              "Bozyazı'ya nasıl gidebilirim?",
               'En güzel plajlar hangileri?',
               'Ne zaman gitmeliyim?',
               'Konaklama seçenekleri neler?',
@@ -248,7 +188,6 @@ const history = messages
               </button>
             ))}
           </div>
-
         </div>
       </section>
     </div>
