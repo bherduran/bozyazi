@@ -113,8 +113,8 @@ const history = messages
 
       // HTTP hatası kontrolü
       if (!response.ok) {
-        throw new Error(`API hatası: ${response.status}`)
-      }
+  throw new Error(`API hatası: ${response.status}`)
+}
 
       const data = await response.json()
 
