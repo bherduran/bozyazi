@@ -79,11 +79,7 @@ const history = messages
     parts: [{ text: m.text }],
   }))
 
-      // Yeni kullanıcı mesajını da ekle
-      history.push({
-        role: 'user',
-        parts: [{ text: trimmed }],
-      })
+    
 
       // fetch: Tarayıcının HTTP isteği atma API'si
       // async/await: Promise'i bekle, sonucu al
