@@ -1,0 +1,109 @@
+/* Visit.css — Ziyaret & Harita sayfası stilleri */
+
+.visit-section { background: var(--cream); }
+
+.visit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.visit-card {
+  background: var(--sand);
+  padding: 2.5rem 2rem;
+  border-top: 3px solid transparent;
+  transition: border-color var(--transition), transform var(--transition);
+}
+.visit-card:hover {
+  border-top-color: var(--gold);
+  transform: translateY(-4px);
+}
+.visit-icon { font-size: 2rem; display: block; margin-bottom: 1rem; }
+.visit-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--sea);
+  margin-bottom: .8rem;
+}
+.visit-card p {
+  font-size: .78rem;
+  line-height: 1.9;
+  color: var(--muted);
+}
+
+/* ── HARİTA ── */
+.map-section { background: var(--sand); }
+
+.map-header { padding-bottom: 2rem !important; }
+
+.map-desc {
+  font-size: .82rem;
+  line-height: 1.8;
+  color: var(--muted);
+  margin-top: 1rem;
+  max-width: 500px;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-top: 1.5rem;
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .65rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--cream);
+  padding: .4rem .9rem;
+  border: 1px solid rgba(10,37,64,.1);
+  transition: background var(--transition), border-color var(--transition);
+}
+.legend-item:hover {
+  background: var(--sea);
+  color: var(--cream);
+  border-color: var(--sea);
+}
+
+/* Harita container — sabit yükseklik zorunlu */
+.map-container {
+  width: 100%;
+  height: 520px;
+  background: var(--sea); /* Harita yüklenene kadar koyu arka plan */
+}
+
+/* Google Maps InfoWindow default stilini ezmek için */
+.gm-style .gm-style-iw-c {
+  padding: 0 !important;
+  border-radius: 2px !important;
+  background: transparent !important;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.5) !important;
+}
+.gm-style .gm-style-iw-d {
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+.gm-style .gm-style-iw-t::after {
+  background: #0a2540 !important;
+}
+/* Kapat butonu */
+.gm-style .gm-ui-hover-effect {
+  opacity: .7 !important;
+  filter: invert(1) !important;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .visit-grid { grid-template-columns: repeat(2, 1fr); }
+  .map-container { height: 420px; }
+}
+@media (max-width: 768px) {
+  .visit-grid { grid-template-columns: 1fr; }
+  .map-container { height: 350px; }
+  .map-legend { gap: .5rem; }
+}

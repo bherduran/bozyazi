@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { path: '/doga',    label: 'Doğa'     },
   { path: '/kultur',  label: 'Kültür'   },
   { path: '/galeri',  label: 'Galeri'   },
+  { path: '/asistan', label: 'Rehber'   },
   { path: '/ziyaret', label: 'Ziyaret'  },
 ]
 

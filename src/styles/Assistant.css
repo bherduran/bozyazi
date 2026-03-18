@@ -1,0 +1,187 @@
+/* Assistant.css — AI Chatbot sayfası */
+
+.assistant-page { min-height: 100vh; }
+
+.chat-section { background: var(--sand); }
+
+/* ── CHAT KABI ── */
+.chat-container {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── MESAJLAR ALANI ── */
+.chat-messages {
+  background: var(--cream);
+  border: 1px solid rgba(10,37,64,.1);
+  border-bottom: none;
+  min-height: 420px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar stili */
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(10,37,64,.15); border-radius: 2px; }
+
+/* ── TEK MESAJ ── */
+.chat-message {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  animation: fadeUp 0.3s ease;
+}
+
+/* Kullanıcı mesajları sağda */
+.chat-message--user {
+  flex-direction: row-reverse;
+}
+
+.chat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  background: var(--sea);
+}
+.chat-message--user .chat-avatar {
+  background: var(--gold);
+}
+
+/* ── MESAJ BALONCUĞU ── */
+.chat-bubble {
+  max-width: 75%;
+  padding: 1rem 1.2rem;
+  font-size: .82rem;
+  line-height: 1.8;
+  border-radius: 2px;
+}
+
+.chat-message--assistant .chat-bubble {
+  background: var(--sea);
+  color: var(--cream);
+  border-top-left-radius: 0;
+}
+
+.chat-message--user .chat-bubble {
+  background: var(--gold);
+  color: var(--deep);
+  border-top-right-radius: 0;
+  text-align: right;
+}
+
+/* Yükleniyor — üç nokta animasyonu */
+.chat-bubble--loading {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .9rem 1.2rem;
+}
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+.dot:nth-child(2) { animation-delay: .2s; }
+.dot:nth-child(3) { animation-delay: .4s; }
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: .4; }
+  40%           { transform: scale(1);   opacity: 1;  }
+}
+
+/* Hata mesajı */
+.chat-error {
+  background: rgba(180,40,40,.1);
+  border-left: 3px solid #b42828;
+  padding: .8rem 1rem;
+  font-size: .75rem;
+  color: #b42828;
+}
+
+/* ── INPUT ALANI ── */
+.chat-input-area {
+  display: flex;
+  gap: 0;
+  border: 1px solid rgba(10,37,64,.15);
+  border-top: 2px solid var(--gold);
+  background: var(--cream);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 1.1rem 1.4rem;
+  font-family: var(--font-body);
+  font-size: .82rem;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  line-height: 1.6;
+  min-height: 52px;
+  max-height: 120px;
+}
+.chat-input::placeholder { color: rgba(107,90,62,.45); }
+.chat-input:disabled { opacity: .5; cursor: not-allowed; }
+
+.chat-send {
+  width: 56px;
+  background: var(--sea);
+  color: var(--gold-light);
+  font-size: 1.3rem;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+.chat-send:hover:not(:disabled) { background: var(--azure); color: var(--cream); }
+.chat-send:disabled { opacity: .4; cursor: not-allowed; }
+.chat-send.loading { cursor: wait; }
+
+/* ── ÖRNEK SORULAR ── */
+.chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: 1.2rem;
+}
+
+.suggestion-btn {
+  font-family: var(--font-body);
+  font-size: .65rem;
+  letter-spacing: .12em;
+  color: var(--muted);
+  background: var(--cream);
+  border: 1px solid rgba(10,37,64,.12);
+  padding: .5rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+}
+.suggestion-btn:hover:not(:disabled) {
+  background: var(--sea);
+  color: var(--cream);
+  border-color: var(--sea);
+}
+.suggestion-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .chat-messages { min-height: 320px; max-height: 400px; padding: 1.2rem; }
+  .chat-bubble { max-width: 88%; font-size: .78rem; }
+  .suggestion-btn { font-size: .6rem; padding: .45rem .8rem; }
+}
