@@ -70,12 +70,14 @@ export default function Assistant() {
     try {
       // Gemini API'ye gönderilecek sohbet geçmişi formatı
       // Gemini "contents" dizisi bekliyor: [{role, parts: [{text}]}]
-      const history = messages
-        .filter(m => m.role !== 'system')
-        .map(m => ({
-          role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.text }],
-        }))
+      // Sohbet geçmişini hazırla — ilk assistant mesajını atla
+const history = messages
+  .filter(m => m.role !== 'system')
+  .slice(1) // ← İlk karşılama mesajını atla
+  .map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.text }],
+  }))
 
       // Yeni kullanıcı mesajını da ekle
       history.push({
@@ -92,18 +94,26 @@ export default function Assistant() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            // System instruction: chatbot'un kimliği
-            system_instruction: {
-              parts: [{ text: SYSTEM_PROMPT }],
-            },
-            contents: history,
-            generationConfig: {
-              temperature: 0.7,  // Yaratıcılık seviyesi (0=robotik, 1=yaratıcı)
-              maxOutputTokens: 500,  // Maksimum cevap uzunluğu
-            },
-          }),
-        }
-      )
+  contents: [
+    {
+      role: 'user',
+      parts: [{ text: SYSTEM_PROMPT }],
+    },
+    {
+      role: 'model',
+      parts: [{ text: 'Anladım, Bozyazı Rehberi olarak yardımcı olacağım.' }],
+    },
+    ...history,
+    {
+      role: 'user',
+      parts: [{ text: trimmed }],
+    },
+  ],
+  generationConfig: {
+    temperature: 0.7,
+    maxOutputTokens: 500,
+  },
+}),
 
       // HTTP hatası kontrolü
       if (!response.ok) {
