@@ -55,7 +55,7 @@ export default function Assistant() {
           parts: [{ text: m.text }],
         }))
 
-   
+   //1.5
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${import.meta.env.VITE_GEMINI_KEY}`,
         {
