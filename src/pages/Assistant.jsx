@@ -55,7 +55,7 @@ export default function Assistant() {
           parts: [{ text: m.text }],
         }))
 
-   //deneme
+   //keyupdate
       
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_KEY}`,
