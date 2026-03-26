@@ -1,4 +1,4 @@
-# Bozyazı Tanıtım Sitesi 🌊
+# Bozyazı Tanıtım Sitesi 🌊  
 
 Mersin'in gizli cenneti Bozyazı'yı tanıtan modern bir React SPA.
 
