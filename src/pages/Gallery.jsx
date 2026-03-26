@@ -114,12 +114,12 @@ export default function Gallery() {
           ))}
         </div>
 
-        <div className="gallery-hint">
+      /*  <div className="gallery-hint">
           <p>
             📁 Fotoğraflarını <code>/public/photos/</code> klasörüne ekle ve{' '}
             <code>Gallery.jsx</code>'teki PHOTOS dizisini güncelle.
           </p>
-        </div>
+        </div> */
       </section>
 
       {/* ── LİGHTBOX ── */}
