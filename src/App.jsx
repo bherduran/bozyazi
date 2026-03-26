@@ -9,7 +9,7 @@
 // Bunun yerine React Router URL'yi okur ve <Discover /> bileşenini render eder.
 // Bu SPA'nın özüdür: sayfa yenilenmez, sadece bileşen değişir.
 
-import { HashRouter , Routes, Route } from 'react-router-dom'
+import { BrowserRouter , Routes, Route } from 'react-router-dom'
 
 import Navbar   from './components/Navbar.jsx'
 import Footer   from './components/Footer.jsx'
@@ -23,9 +23,9 @@ import Visit    from './pages/Visit.jsx'
 
 export default function App() {
   return (
-    // HashRouter : Tüm Router mantığını sarar.
+    // BrowserRouter : Tüm Router mantığını sarar.
     // History API'yi kullanır → URL değişir ama sayfa yenilenmez.
-    <HashRouter >
+    <BrowserRouter >
 
       {/* Navbar her sayfada görünür, Routes dışında */}
       <Navbar />
@@ -51,6 +51,6 @@ export default function App() {
       {/* Footer da her sayfada görünür */}
       <Footer />
 
-    </HashRouter >
+    </BrowserRouter >
   )
 }
