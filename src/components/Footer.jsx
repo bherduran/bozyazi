@@ -1,37 +1,31 @@
-// Footer.jsx
-// Basit bir "presentational component" — sadece görünüm, mantık yok.
-// App.jsx'te bir kez tanımlanır, tüm sayfalarda görünür.
-
-import { Link } from 'react-router-dom'
+import { Link }           from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import '../styles/Footer.css'
 
 export default function Footer() {
+  const { t } = useTranslation('common')
+
   return (
     <footer className="footer">
       <div className="footer-inner">
-
         <div className="footer-brand">
           <Link to="/" className="footer-logo">Bozyazı</Link>
-          <p className="footer-tagline">Toroslar'ın Denizle Buluştuğu Yer</p>
+          <p className="footer-tagline">{t('footer_tagline')}</p>
         </div>
-
         <nav className="footer-nav">
-          <Link to="/kesifet">Keşfet</Link>
-          <Link to="/doga">Doğa</Link>
-          <Link to="/kultur">Kültür</Link>
-          <Link to="/galeri">Galeri</Link>
-          <Link to="/ziyaret">Ziyaret</Link>
+          <Link to="/kesifet">{t('nav_discover')}</Link>
+          <Link to="/doga">{t('nav_nature')}</Link>
+          <Link to="/kultur">{t('nav_culture')}</Link>
+          <Link to="/galeri">{t('nav_gallery')}</Link>
+          <Link to="/ziyaret">{t('nav_visit')}</Link>
         </nav>
-
         <div className="footer-meta">
-          <p>Mersin İli · <span>Türkiye</span> · Akdeniz Kıyısı</p>
+          <p>{t('footer_location')}</p>
           <p className="coords">36°31′K 32°57′D</p>
         </div>
-
       </div>
-
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Bozyazı — Tüm hakları saklıdır.</p>
+        <p>© {new Date().getFullYear()} Bozyazı — {t('footer_rights')}</p>
       </div>
     </footer>
   )

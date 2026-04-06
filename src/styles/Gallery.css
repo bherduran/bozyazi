@@ -81,7 +81,7 @@
 }
 
 /* ── EKLE İPUCU ────────────────────────────────────────────── */
-.gallery-hint {
+.gallery-hint { display: none; /* Kullanıcıya gösterilmiyor */
   margin-top: 3rem;
   padding: 1.5rem 2rem;
   background: rgba(10,37,64,.06);

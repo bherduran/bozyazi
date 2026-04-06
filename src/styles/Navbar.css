@@ -8,14 +8,10 @@
 
 /* ── ANA NAV KABI ──────────────────────────────────────────── */
 .navbar {
-  position: fixed;
-  /* Sayfa kaydırılsa da üstte kalır */
-  top: 0;
-  left: 0;
-  right: 0;
+  position: fixed;            /* Sayfa kaydırılsa da üstte kalır */
+  top: 0; left: 0; right: 0;
   height: var(--nav-height);
-  z-index: 1000;
-  /* Her şeyin üstünde */
+  z-index: 1000;              /* Her şeyin üstünde */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -23,21 +19,17 @@
   transition: background var(--transition), box-shadow var(--transition);
 }
 
-
-
 /* JavaScript ile eklenen sınıf: scroll edilince arka plan değişir */
 .navbar.scrolled {
   background: rgba(6, 24, 36, 0.92);
-  backdrop-filter: blur(14px);
-  /* Cam efekti */
-  -webkit-backdrop-filter: blur(14px);
-  /* Safari için */
-  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(14px);           /* Cam efekti */
+  -webkit-backdrop-filter: blur(14px);   /* Safari için */
+  box-shadow: 0 2px 30px rgba(0,0,0,0.25);
 }
 
 /* Sayfa top'undayken şeffaf — hero görüntüsü görünsün */
 .navbar:not(.scrolled) {
-  background: linear-gradient(to bottom, rgba(6, 24, 36, 0.6) 0%, transparent 100%);
+  background: rgba(10, 37, 64, 0.95);
 }
 
 
@@ -51,7 +43,6 @@
   /* Link olarak kullanılacak, hover efekti */
   transition: color var(--transition);
 }
-
 .nav-logo:hover {
   color: var(--gold-light);
 }
@@ -76,8 +67,7 @@
 }
 
 .nav-link:hover,
-.nav-link.active {
-  /* React Router aktif sayfaya .active ekler */
+.nav-link.active {    /* React Router aktif sayfaya .active ekler */
   color: var(--gold-light);
   border-bottom-color: var(--gold);
 }
@@ -90,19 +80,17 @@
   Açıkken "X" şekline dönüşür (transform ile).
 */
 .hamburger {
-  display: none;
-  /* Masaüstünde gizli */
+  display: none;              /* Masaüstünde gizli */
   flex-direction: column;
   justify-content: center;
   gap: 5px;
   width: 36px;
   height: 36px;
   padding: 4px;
-  background: transparent;
+  background: rgba(10, 37, 64, 0.95);
   border: none;
   cursor: pointer;
-  z-index: 1100;
-  /* Mobil menünün üstünde */
+  z-index: 1100;              /* Mobil menünün üstünde */
 }
 
 /* Her çizgi bir <span> */
@@ -120,12 +108,10 @@
 .hamburger.open span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
-
 .hamburger.open span:nth-child(2) {
   opacity: 0;
   width: 0;
 }
-
 .hamburger.open span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
@@ -140,8 +126,7 @@
 .mobile-menu {
   position: fixed;
   top: var(--nav-height);
-  left: 0;
-  right: 0;
+  left: 0; right: 0;
   background: rgba(6, 24, 36, 0.97);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -152,10 +137,9 @@
   /* Başlangıçta gizli */
   transform: translateY(-110%);
   opacity: 0;
-  pointer-events: none;
-  /* Gizliyken tıklanamaz */
+  pointer-events: none; /* Gizliyken tıklanamaz */
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease;
+              opacity 0.3s ease;
   z-index: 999;
 }
 
@@ -205,8 +189,32 @@
   }
 }
 
-.navbar.solid {
-  background: rgba(6, 24, 36, 0.95);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+/* ── DİL TOGGLE BUTONU ── */
+.lang-toggle {
+  font-family: var(--font-body);
+  font-size: .65rem;
+  letter-spacing: .2em;
+  color: rgba(244,232,208,.7);
+  background: rgba(10, 37, 64, 0.95);
+  border: 1px solid rgba(244,232,208,.2);
+  padding: .3rem .7rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  border-radius: 2px;
+}
+.lang-toggle:hover {
+  color: var(--gold-light);
+  border-color: var(--gold);
+}
+
+.nav-right {
+  display: none;
+  align-items: center;
+  gap: .8rem;
+}
+
+.lang-toggle--mobile { display: block; }
+
+@media (max-width: 768px) {
+  .nav-right { display: flex; }
 }

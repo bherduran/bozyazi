@@ -1,42 +1,58 @@
-// Culture.jsx — Kültür Sayfası
+import { useTranslation } from 'react-i18next'
+import { motion }         from 'framer-motion'
+import PageWrapper        from '../components/PageWrapper.jsx'
 import '../styles/Pages.css'
 
-const CULTURE_ITEMS = [
-  { title: 'Deniz Ürünleri & Meze', desc: 'Denize nazır restoranlarda günün en taze avını, geleneksel Türk meze sofrasıyla tadın. Burada deniz kenarındaki akşamlar yavaş ve zamansız bir ritimle akar.' },
-  { title: 'Türk Misafirperverliği', desc: 'Bozyazı\'da bir çay ya da kahve daveti asla tesadüf değildir — gerçek bir karşılama jestir. Samimi bir tokalaşma ve saygılı bir selam, her kapıda dost kazandırır.' },
-  { title: 'Yerel Pazarlar', desc: 'İlçenin verimli kıyı şeridi Türkiye\'nin en kaliteli muzunu, narenciyesini ve yerfıstığını yetiştirir. Sabah pazarları renk, koku ve bereketla dolar taşar.' },
-  { title: 'Deniz Kenarı Geceleri', desc: 'Güneş Toroslar\'ın ardına çekildiğinde kafeler Türk halk müziği, samimi sohbet ve açık suyun üzerindeki fener ışıklarıyla canlanır.' },
-  { title: 'Arkeolojik Miras', desc: 'Nagidos\'tan çıkarılan eserler — antik gümüş sikkeler dahil — Mersin Müzesi\'nde sergilenmektedir. Bu kıyının geçmişi taşta ve toprağın derinliklerinde hâlâ yaşıyor.' },
-  { title: 'Topluluk Ruhu', desc: 'İlçenin küçük ölçeği herkesi birbirine yakın kılar. Pazarlar, liman, çay ocakları — Bozyazı\'nın gerçek hayatı bu mekânlarda sessizce ve sıcacık akar.' },
-]
+const cardVariants = {
+  hidden:  { opacity: 0, y: 24 },
+  visible: (i) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' }
+  }),
+}
 
 export default function Culture() {
+  const { t } = useTranslation('culture')
+
+  const ITEMS = [
+    { title: t('item1_title'), desc: t('item1_desc') },
+    { title: t('item2_title'), desc: t('item2_desc') },
+    { title: t('item3_title'), desc: t('item3_desc') },
+    { title: t('item4_title'), desc: t('item4_desc') },
+    { title: t('item5_title'), desc: t('item5_desc') },
+    { title: t('item6_title'), desc: t('item6_desc') },
+  ]
+
   return (
-    <div className="page-wrapper">
+    <PageWrapper>
       <header className="page-header">
         <div className="page-header-inner">
-          <p className="section-label">Kültür & Lezzet</p>
+          <p className="section-label">{t('label')}</p>
           <h1 className="section-title section-title--light">
-            Yerel Hayatı<br /><em>Tadın</em>
+            {t('title1')}<br /><em>{t('title2')}</em>
           </h1>
-          <p className="page-header-desc">
-            Bozyazı yalnızca görülecek değil, yaşanacak bir yer.
-            Sofrası, insanı ve ritmiyle sizi içine çeker.
-          </p>
+          <p className="page-header-desc">{t('desc')}</p>
         </div>
       </header>
-
       <section className="culture-section section-padding">
         <div className="culture-grid">
-          {CULTURE_ITEMS.map((item, i) => (
-            <div key={item.title} className="culture-card">
+          {ITEMS.map((item, i) => (
+            <motion.div
+              key={item.title}
+              className="culture-card"
+              custom={i}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={cardVariants}
+            >
               <span className="culture-index">0{i + 1}</span>
               <h2 className="culture-title">{item.title}</h2>
               <p className="culture-desc">{item.desc}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
-    </div>
+    </PageWrapper>
   )
 }
