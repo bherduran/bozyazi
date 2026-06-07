@@ -1,87 +1,91 @@
-# 🌊 Bozyazı — Toroslar'ın Denizle Buluştuğu Yer
+# Bozyazı — Where the Taurus Mountains Meet the Sea
 
-> Mersin'in gizli cenneti Bozyazı'yı tanıtan modern, interaktif bir web sitesi.
+> A modern, interactive website showcasing Bozyazı, a hidden gem on Turkey's Mediterranean coast.
 
-**🔗 Canlı Site:** [bozyazi.vercel.app](https://bozyazi.vercel.app)
-
----
-
-## 🗺️ Sayfalar
-
-| Sayfa | Açıklama |
-|-------|----------|
-| **Ana Sayfa** | Hero bölümü, ilçe hakkında bilgi ve istatistikler |
-| **Keşfet** | Gezilecek yerler — Nagidos, Softa Kalesi, Çaltı Mağarası ve daha fazlası |
-| **Doğa** | Doğal güzellikler, aktiviteler ve rotalar |
-| **Kültür** | Yerel yaşam, lezzetler ve kültürel değerler |
-| **Galeri** | Fotoğraf galerisi ve lightbox görüntüleyici |
-| **Rehber** | Bozyazı hakkında her şeyi yanıtlayan AI asistan |
-| **Ziyaret** | Ulaşım, konaklama bilgileri ve interaktif Google Maps |
+**Live Site:** [bozyazi.vercel.app](https://bozyazi.vercel.app)
 
 ---
 
-## ✨ Özellikler
+## Pages
 
-- 🤖 **AI Rehber** — Gemini API destekli, sadece Bozyazı hakkında sorulara cevap veren chatbot
-- 🗺️ **İnteraktif Harita** — Google Maps JavaScript API ile özel koyu tema ve özel markerlar
-- 🖼️ **Fotoğraf Galerisi** — Lightbox görüntüleyici, klavye navigasyonu destekli
-- 📱 **Tam Responsive** — Mobil, tablet ve masaüstü uyumlu
-- 🍔 **Hamburger Menü** — Mobilde animasyonlu açılır navigasyon
-- ⚡ **Hızlı Yükleme** — Vite ile optimize edilmiş build
-
----
-
-## 🛠️ Teknolojiler
-
-| Teknoloji | Kullanım Amacı |
-|-----------|---------------|
-| **React 18** | Bileşen tabanlı UI geliştirme |
-| **React Router v6** | Sayfa yenilenmeden URL geçişleri (SPA) |
-| **Vite** | Hızlı geliştirme sunucusu ve build aracı |
-| **Google Maps JavaScript API** | İnteraktif harita |
-| **Gemini API** | AI destekli chatbot |
-| **Vercel** | Hosting ve otomatik deployment |
-| **CSS (Vanilla)** | Her bileşenin kendi CSS dosyası |
+| Page | Description |
+|------|-------------|
+| **Home** | Hero section, district overview and statistics |
+| **Discover** | Places to visit — Nagidos, Softa Castle, Çaltı Cave and more |
+| **Nature** | Natural beauty, outdoor activities and routes |
+| **Culture** | Local life, cuisine and cultural highlights |
+| **Gallery** | Photo gallery with lightbox viewer |
+| **Guide** | AI assistant answering questions about Bozyazı |
+| **Visit** | Transport, accommodation and interactive Google Maps |
 
 ---
 
-## 📁 Proje Yapısı
+## Features
+
+- **AI Guide** — Gemini API-powered chatbot constrained to Bozyazı topics
+- **Interactive Map** — Google Maps JavaScript API with custom dark theme and markers
+- **Photo Gallery** — Lightbox viewer with keyboard navigation
+- **Fully Responsive** — Mobile, tablet, and desktop
+- **Animated Navbar** — Hamburger menu with smooth transitions
+- **Fast Build** — Vite-optimized bundle
+
+---
+
+## Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | Component-based UI |
+| **React Router v6** | Client-side routing (SPA) |
+| **Vite** | Dev server and build tool |
+| **Google Maps JavaScript API** | Interactive map |
+| **Gemini API** | AI-powered chatbot |
+| **Vercel** | Hosting and CI/CD |
+| **CSS (Vanilla)** | Per-component stylesheets |
+
+---
+
+## Project Structure
 
 ```
 src/
   components/
-    Navbar.jsx        # Hamburger menü dahil navigasyon
-    Footer.jsx        # Alt bilgi
+    Navbar.jsx        # Navigation with hamburger menu
+    Footer.jsx
   pages/
-    Home.jsx          # Ana sayfa
-    Discover.jsx      # Keşfet sayfası
-    Nature.jsx        # Doğa sayfası
-    Culture.jsx       # Kültür sayfası
-    Gallery.jsx       # Galeri + Lightbox
-    Assistant.jsx     # AI Rehber chatbot
-    Visit.jsx         # Ziyaret + Google Maps
+    Home.jsx
+    Discover.jsx
+    Nature.jsx
+    Culture.jsx
+    Gallery.jsx       # Gallery + Lightbox
+    Assistant.jsx     # AI chatbot
+    Visit.jsx         # Visit info + Google Maps
   styles/
-    global.css        # CSS değişkenleri ve reset
-    *.css             # Her bileşenin kendi stili
-  App.jsx             # Router yapısı
-  main.jsx            # Giriş noktası
+    global.css        # CSS variables and reset
+    *.css             # Per-component styles
+  App.jsx
+  main.jsx
 ```
 
-## 🌍 Hakkında
+## Local Setup
 
-Bu site, Mersin iline bağlı Bozyazı ilçesini tanıtmak amacıyla geliştirilmiştir. Bozyazı; Toros Dağları ile Akdeniz'in kucağında, el değmemiş doğasıyla eşsiz bir kıyı ilçesidir.
+```bash
+npm install
+```
+
+Create a `.env` file:
+
+```env
+VITE_GEMINI_KEY=your_gemini_api_key
+VITE_MAPS_KEY=your_google_maps_api_key
+```
+
+```bash
+npm run dev
+```
 
 ---
 
-## 👨‍💻 Geliştirici
+## Developer
 
-**Bilge Han Erduran**
-
-[![GitHub](https://img.shields.io/badge/GitHub-bherduran-181717?style=flat&logo=github)](https://github.com/bherduran)
-
----
-
-<p align="center">
-  <strong>Bozyazı</strong> — Mersin İli · Türkiye · Akdeniz Kıyısı<br>
-  36°31′K 32°57′D
-</p>
+**Bilge Han Erduran** — [github.com/bherduran](https://github.com/bherduran)
