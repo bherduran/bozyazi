@@ -3,7 +3,9 @@
 // Bu dosya sunucuda çalışır, tarayıcıya hiç gitmez. API anahtarı ve sistem
 // promptu burada durur; istemci sadece /api/chat adresine mesaj gönderir.
 
-const MODEL = 'gemini-2.5-flash-lite'
+// gemini-2.5-flash-lite yeni anahtarlara kapatıldı; Google'ın yönlendirdiği
+// sürüm bu. Model adı ileride yine değişebileceği için env'den geçilebiliyor.
+const MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite'
 
 // Kaç mesaj geriye kadar hatırlansın. Her istekte tüm geçmiş yeniden
 // gönderildiği için sınır koymazsak sohbet uzadıkça istek de pahalılaşır.
