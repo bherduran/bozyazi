@@ -3,33 +3,8 @@ import { useTranslation }              from 'react-i18next'
 import PageWrapper                     from '../components/PageWrapper.jsx'
 import '../styles/Assistant.css'
 
-const SYSTEM_PROMPT_TR = `Sen Bozyazı'nın resmi dijital rehberisisin. Adın "Bozyazı Rehberi".
-Bozyazı hakkında bilmen gerekenler:
-- Mersin iline bağlı, Akdeniz kıyısında küçük bir ilçe
-- Toros Dağları ile Akdeniz arasında, Mersin'in 220 km batısında
-- Yaklaşık 26.000 nüfus
-- Önemli yerler: Nagidos Adası, Softa Kalesi, Maraş Tepesi, Çaltı Mağarası, Dikilitaş Tabiat Parkı
-- Ulaşım: En yakın havalimanları Gazipaşa-Alanya (GZP) ve Antalya (AYT)
-- En iyi ziyaret zamanı: Mayıs-Ekim
-Kuralların:
-1. SADECE Bozyazı ve Mersin bölgesiyle ilgili sorulara cevap ver
-2. Bozyazı dışındaki konular sorulursa nazikçe reddet
-3. Her zaman Türkçe cevap ver
-4. Kısa, samimi ve bilgilendirici ol`
-
-const SYSTEM_PROMPT_EN = `You are the official digital guide of Bozyazı. Your name is "Bozyazı Guide".
-What you know about Bozyazı:
-- A small coastal district of Mersin Province, Turkey
-- Between the Taurus Mountains and the Mediterranean, 220 km west of Mersin
-- Population of approximately 26,000
-- Key sites: Nagidos Island, Softa Castle, Maraş Hill, Çaltı Cave, Dikilitaş Nature Park
-- Transport: Nearest airports are Gazipaşa-Alanya (GZP) and Antalya (AYT)
-- Best time to visit: May-October
-Rules:
-1. ONLY answer questions about Bozyazı and the Mersin region
-2. Politely decline questions about other topics
-3. Always respond in English
-4. Be concise, friendly and informative`
+// Sistem promptu ve API anahtarı artık burada değil — ikisi de /api/chat
+// içinde, sunucuda duruyor. Bu dosya sadece sohbet arayüzünü yönetir.
 
 export default function Assistant() {
   const { t, i18n }  = useTranslation('assistant')
@@ -55,8 +30,6 @@ export default function Assistant() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const SYSTEM_PROMPT = i18n.language === 'en' ? SYSTEM_PROMPT_EN : SYSTEM_PROMPT_TR
-
   const SUGGESTIONS = [
     t('suggestion1'),
     t('suggestion2'),
@@ -74,47 +47,26 @@ export default function Assistant() {
     setError(null)
 
     try {
-      const history = messages
-        .slice(1)
-        .map(m => ({
-          role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.text }],
-        }))
+      // Açılış mesajı bize ait, geçmişe dahil etmiyoruz.
+      // Geçmişi kısaltma ve rol dönüşümü sunucuda yapılıyor.
+      const history = messages.slice(1).map(m => ({ role: m.role, text: m.text }))
 
-      const makeRequest = async (retries = 3) => {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${import.meta.env.VITE_GEMINI_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [
-                { role: 'user',  parts: [{ text: SYSTEM_PROMPT }] },
-                { role: 'model', parts: [{ text: i18n.language === 'en' ? 'Understood, I will act as the Bozyazı Guide.' : 'Anladım, Bozyazı Rehberi olarak yardımcı olacağım.' }] },
-                ...history,
-                { role: 'user',  parts: [{ text: trimmed }] },
-              ],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
-            }),
-          }
-        )
-        if (response.status === 429 && retries > 0) {
-          await new Promise(r => setTimeout(r, 3000))
-          return makeRequest(retries - 1)
-        }
-        if (!response.ok) throw new Error(`API hatası: ${response.status}`)
-        return response
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: trimmed, history, lang: i18n.language }),
+      })
+
+      if (!response.ok) {
+        const { error: code } = await response.json().catch(() => ({}))
+        throw new Error(code ?? `http_${response.status}`)
       }
 
-      const response = await makeRequest()
-      const data = await response.json()
-      const assistantText = data.candidates?.[0]?.content?.parts?.[0]?.text
-        ?? (i18n.language === 'en' ? 'Sorry, something went wrong. Please try again.' : 'Üzgünüm, bir sorun oluştu. Tekrar dener misin?')
-
-      setMessages(prev => [...prev, { role: 'assistant', text: assistantText }])
+      const { text } = await response.json()
+      setMessages(prev => [...prev, { role: 'assistant', text }])
     } catch (err) {
-      console.error('Gemini API hatası:', err)
-      setError(t('error'))
+      console.error('Sohbet hatası:', err)
+      setError(err.message === 'rate_limited' ? t('error_rate_limit') : t('error'))
     } finally {
       setIsLoading(false)
       inputRef.current?.focus()
