@@ -27,7 +27,7 @@ export default function NagidosWidget() {
   const { t }    = useTranslation('assistant')
   const location = useLocation()
   const lenis    = useLenis()
-  const { isOpen, setIsOpen, isLoading } = useChat()
+  const { isOpen, setIsOpen, isBusy } = useChat()
 
   const [showTeaser, setShowTeaser] = useState(false)
   const [isMobile,   setIsMobile]   = useState(() => window.matchMedia('(max-width: 640px)').matches)
@@ -91,7 +91,7 @@ export default function NagidosWidget() {
               <div className="nagidos-panel-title">
                 <strong>Nagidos</strong>
                 <span>
-                  <i className={`nagidos-status ${isLoading ? 'is-typing' : ''}`} aria-hidden="true" />
+                  <i className={`nagidos-status ${isBusy ? 'is-typing' : ''}`} aria-hidden="true" />
                   {t('widget_subtitle')}
                 </span>
               </div>

@@ -19,7 +19,7 @@ const MARKDOWN_COMPONENTS = {
 
 export default function ChatPanel({ variant = 'page', autoFocus = false }) {
   const { t } = useTranslation('assistant')
-  const { messages, isLoading, error, sendMessage } = useChat()
+  const { messages, isLoading, isBusy, error, sendMessage } = useChat()
 
   const [input, setInput] = useState('')
   const messagesRef = useRef(null)
@@ -38,17 +38,17 @@ export default function ChatPanel({ variant = 'page', autoFocus = false }) {
 
   // Cevap gelince input'a geri odaklan (önceki davranış). Sadece yükleme
   // bitince; ilk açılışta odaklanırsak mobilde klavye kendiliğinden açılır.
-  const wasLoading = useRef(isLoading)
+  const wasBusy = useRef(isBusy)
   useEffect(() => {
-    if (wasLoading.current && !isLoading) inputRef.current?.focus({ preventScroll: true })
-    wasLoading.current = isLoading
-  }, [isLoading])
+    if (wasBusy.current && !isBusy) inputRef.current?.focus({ preventScroll: true })
+    wasBusy.current = isBusy
+  }, [isBusy])
 
   const SUGGESTIONS = [t('suggestion1'), t('suggestion2'), t('suggestion3'), t('suggestion4')]
 
   async function handleSend() {
     const text = input
-    if (!text.trim() || isLoading) return
+    if (!text.trim() || isBusy) return
     setInput('')
     await sendMessage(text)
   }
@@ -98,7 +98,7 @@ export default function ChatPanel({ variant = 'page', autoFocus = false }) {
         {variant === 'widget' && showSuggestions && (
           <div className="chat-suggestions chat-suggestions--inline">
             {SUGGESTIONS.map(q => (
-              <button key={q} className="suggestion-btn" onClick={() => sendMessage(q)} disabled={isLoading}>
+              <button key={q} className="suggestion-btn" onClick={() => sendMessage(q)} disabled={isBusy}>
                 {q}
               </button>
             ))}
@@ -115,15 +115,15 @@ export default function ChatPanel({ variant = 'page', autoFocus = false }) {
           onKeyDown={handleKeyDown}
           placeholder={t('placeholder')}
           rows={1}
-          disabled={isLoading}
+          disabled={isBusy}
         />
         <button
-          className={`chat-send ${isLoading ? 'loading' : ''}`}
+          className={`chat-send ${isBusy ? 'loading' : ''}`}
           onClick={handleSend}
-          disabled={isLoading || !input.trim()}
+          disabled={isBusy || !input.trim()}
           aria-label="Send"
         >
-          {isLoading ? <span className="chat-spinner" /> : <Icon name="arrowRight" size={20} />}
+          {isBusy ? <span className="chat-spinner" /> : <Icon name="arrowRight" size={20} />}
         </button>
       </div>
 
@@ -134,7 +134,7 @@ export default function ChatPanel({ variant = 'page', autoFocus = false }) {
               key={q}
               className="suggestion-btn"
               onClick={() => { setInput(q); inputRef.current?.focus() }}
-              disabled={isLoading}
+              disabled={isBusy}
             >
               {q}
             </button>

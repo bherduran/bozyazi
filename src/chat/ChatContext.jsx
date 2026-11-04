@@ -13,7 +13,10 @@ export function ChatProvider({ children }) {
   const { t, i18n } = useTranslation('assistant')
 
   const [messages,  setMessages]  = useState([{ role: 'assistant', text: t('initial_message') }])
+  // isLoading: ilk kelime henüz gelmedi (bekleme noktaları görünür)
+  // isBusy:    istek sürüyor, cevap hâlâ akıyor olabilir (input kilitli)
   const [isLoading, setIsLoading] = useState(false)
+  const [isBusy,    setIsBusy]    = useState(false)
   const [error,     setError]     = useState(null)
   const [isOpen,    setIsOpen]    = useState(false)
 
@@ -24,10 +27,11 @@ export function ChatProvider({ children }) {
 
   async function sendMessage(text) {
     const trimmed = text.trim()
-    if (!trimmed || isLoading) return false
+    if (!trimmed || isBusy) return false
 
     setMessages(prev => [...prev, { role: 'user', text: trimmed }])
     setIsLoading(true)
+    setIsBusy(true)
     setError(null)
 
     try {
@@ -46,18 +50,37 @@ export function ChatProvider({ children }) {
         throw new Error(code ?? `http_${response.status}`)
       }
 
-      const { text: reply } = await response.json()
-      setMessages(prev => [...prev, { role: 'assistant', text: reply }])
+      // Cevap akış halinde geliyor: ilk parçada yeni bir asistan mesajı
+      // açıyoruz, sonraki parçaları onun sonuna ekliyoruz.
+      const reader  = response.body.getReader()
+      const decoder = new TextDecoder()
+      let reply = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+        if (!chunk) continue
+        const started = reply === ''
+        reply += chunk
+        const text = reply
+        setMessages(prev => started
+          ? [...prev, { role: 'assistant', text }]
+          : [...prev.slice(0, -1), { role: 'assistant', text }])
+        // İlk kelime geldi: bekleme noktalarını kaldır
+        if (started) setIsLoading(false)
+      }
+      if (!reply) throw new Error('empty_response')
     } catch (err) {
       console.error('Sohbet hatası:', err)
       setError(err.message === 'rate_limited' ? t('error_rate_limit') : t('error'))
     } finally {
       setIsLoading(false)
+      setIsBusy(false)
     }
     return true
   }
 
-  const value = { messages, isLoading, error, sendMessage, isOpen, setIsOpen }
+  const value = { messages, isLoading, isBusy, error, sendMessage, isOpen, setIsOpen }
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
 }
 
