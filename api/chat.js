@@ -189,6 +189,7 @@ export default async function handler(req, res) {
     let buffer = ''
     let sent   = 0
     let firstChunkMs = null
+    let usage = null, modelVersion = null
 
     const writeText = text => {
       if (!streaming) {
@@ -219,6 +220,9 @@ export default async function handler(req, res) {
         if (!data) continue
         let parsed
         try { parsed = JSON.parse(data) } catch { continue }
+        // Son olayda kullanım bilgisi geliyor: model, düşünme token'ları vb.
+        if (parsed.usageMetadata) usage = parsed.usageMetadata
+        if (parsed.modelVersion)  modelVersion = parsed.modelVersion
         const parts = parsed.candidates?.[0]?.content?.parts ?? []
         // Düşünme (thought) parçalarını kullanıcıya göstermiyoruz
         const text = parts.filter(p => !p.thought && p.text).map(p => p.text).join('')
@@ -232,7 +236,10 @@ export default async function handler(req, res) {
       return res.status(502).json({ error: 'empty_response' })
     }
 
-    console.log(`chat: ilk parça ${firstChunkMs} ms, toplam ${Date.now() - startedAt} ms, ${sent} karakter`)
+    console.log(
+      `chat: ilk parça ${firstChunkMs} ms, toplam ${Date.now() - startedAt} ms, ${sent} karakter,`,
+      `model=${modelVersion ?? MODEL} girdi=${usage?.promptTokenCount} düşünme=${usage?.thoughtsTokenCount ?? 0} çıktı=${usage?.candidatesTokenCount}`
+    )
     return res.end()
   } catch (err) {
     console.error('chat handler hatası:', err)
