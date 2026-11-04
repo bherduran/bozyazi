@@ -20,7 +20,7 @@
   margin-top: 1.2rem;
   font-size: .82rem;
   line-height: 1.9;
-  color: rgba(244,232,208,.5);
+  color: rgba(244,232,208,.72);
   max-width: 560px;
 }
 
@@ -41,7 +41,7 @@
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  transition: transform var(--transition);
+  /* transform'u Framer yönetiyor (giriş animasyonu + fareyle eğilme) */
 }
 .place-card::before {
   content: '';
@@ -55,7 +55,6 @@
   opacity: .4;
   transition: opacity var(--transition);
 }
-.place-card:hover { transform: translateY(-4px); }
 .place-card:hover::before { opacity: .7; }
 
 /* Alt altın çizgi */
@@ -63,29 +62,19 @@
   content: '';
   position: absolute;
   bottom: 0; left: 0;
-  width: 0; height: 3px;
+  width: 100%; height: 3px;
   background: var(--gold);
-  transition: width 0.45s ease;
+  /* width yerine scaleX: layout'u yeniden hesaplatmadan aynı görünüm */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s ease;
 }
-.place-card:hover::after { width: 100%; }
-
-.place-num {
-  position: absolute;
-  top: 1.5rem; right: 1.5rem;
-  font-family: var(--font-display);
-  font-size: 4.5rem;
-  font-weight: 300;
-  line-height: 1;
-  color: rgba(200,150,62,.15);
-  transition: color var(--transition);
-  pointer-events: none;
-}
-.place-card:hover .place-num { color: rgba(200,150,62,.4); }
+.place-card:hover::after { transform: scaleX(1); }
 
 .place-content { position: relative; z-index: 1; }
 .place-tag {
-  font-size: .58rem;
-  letter-spacing: .28em;
+  font-size: .72rem;
+  letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--gold-light);
   display: block;
@@ -100,15 +89,18 @@
   margin-bottom: .8rem;
 }
 .place-desc {
-  font-size: .72rem;
+  font-size: .84rem;
   line-height: 1.8;
-  color: rgba(244,232,208,.6);
+  color: rgba(244,232,208,.82);
   /* Normalde kısaltılmış, hover'da tam görünür */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  transition: all 0.4s ease;
+}
+/* Dokunmatik ekranda hover yok: metin hep tam görünsün */
+@media (hover: none) {
+  .place-desc { -webkit-line-clamp: unset; }
 }
 .place-card:hover .place-desc {
   -webkit-line-clamp: unset;

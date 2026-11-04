@@ -56,8 +56,8 @@
 }
 
 .nav-link {
-  font-size: 0.68rem;
-  letter-spacing: 0.22em;
+  font-size: .72rem;
+  letter-spacing: .18em;
   text-transform: uppercase;
   color: rgba(244, 232, 208, 0.8);
   padding-bottom: 3px;
@@ -100,7 +100,7 @@
   width: 100%;
   background: var(--cream);
   border-radius: 2px;
-  transition: transform 0.35s ease, opacity 0.25s ease, width 0.25s ease;
+  transition: transform 0.35s ease, opacity 0.25s ease;
   transform-origin: center;
 }
 
@@ -110,7 +110,7 @@
 }
 .hamburger.open span:nth-child(2) {
   opacity: 0;
-  width: 0;
+  transform: scaleX(0);
 }
 .hamburger.open span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
@@ -158,13 +158,13 @@
   padding: 0.9rem 0;
   border-bottom: 1px solid rgba(200, 150, 62, 0.15);
   letter-spacing: 0.05em;
-  transition: color var(--transition), padding-left var(--transition);
+  transition: color var(--transition), transform var(--transition);
 }
 
 .mobile-link:hover,
 .mobile-link.active {
   color: var(--gold-light);
-  padding-left: 0.5rem;
+  transform: translateX(0.5rem);
 }
 
 .mobile-link:last-child {
@@ -192,9 +192,9 @@
 /* ── DİL TOGGLE BUTONU ── */
 .lang-toggle {
   font-family: var(--font-body);
-  font-size: .65rem;
-  letter-spacing: .2em;
-  color: rgba(244,232,208,.7);
+  font-size: .72rem;
+  letter-spacing: .16em;
+  color: rgba(244,232,208,.78);
   background: rgba(10, 37, 64, 0.95);
   border: 1px solid rgba(244,232,208,.2);
   padding: .3rem .7rem;

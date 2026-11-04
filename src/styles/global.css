@@ -43,7 +43,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth kaldırıldı — yumuşak kaydırmayı Lenis yapıyor,
+     ikisi birlikte çalışınca birbiriyle çakışıyor. */
   font-size: 16px; /* 1rem = 16px */
 }
 
@@ -65,30 +66,19 @@ a { text-decoration: none; color: inherit; }
 ul, ol { list-style: none; }
 button { cursor: pointer; border: none; background: none; font: inherit; }
 
+/* Tarayıcının kendi çizdiği yüzeyler de paletten: seçim, imleç, odak halkası,
+   kaydırma çubuğu. Varsayılan maviler sitenin hiçbir yerine ait değil. */
+::selection { background: var(--gold-light); color: var(--deep); }
+html { caret-color: var(--gold); scrollbar-color: rgba(10,37,64,.35) var(--sand); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+a { text-underline-offset: .2em; }
+.icon { display: inline-block; flex-shrink: 0; vertical-align: middle; }
+
 
 /* ── 3. YARDIMCI SINIFLAR (Utility Classes) ──────────────────
    Tekrar kullanılabilir küçük sınıflar.
    Tailwind CSS'in yaptığı şeyin küçük versiyonu.
    ─────────────────────────────────────────────────────────── */
-
-/* Bölüm etiket satırı: "— Hakkında" gibi küçük başlıklar */
-.section-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-.section-label::before {
-  content: '';
-  width: 30px;
-  height: 1px;
-  background: var(--gold);
-  flex-shrink: 0;
-}
 
 /* Büyük bölüm başlıkları */
 .section-title {
@@ -98,6 +88,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   font-weight: 300;
   line-height: 1.15;
   color: var(--sea);
+  text-wrap: balance;
 }
 .section-title em {
   font-style: italic;
@@ -121,14 +112,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: center;
-}
-
-/* Altın rengi vurgu çizgisi */
-.gold-bar {
-  width: 60px;
-  height: 3px;
-  background: var(--gold);
-  margin: 1.5rem 0;
 }
 
 /* Fade-in animasyonu — sayfa yüklenince elementlere uygulanır */

@@ -8,9 +8,11 @@
 
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { ChatProvider }    from './chat/ChatContext.jsx'
 
 import Navbar    from './components/Navbar.jsx'
 import Footer    from './components/Footer.jsx'
+import NagidosWidget from './components/NagidosWidget.jsx'
 import Home      from './pages/Home.jsx'
 import Discover  from './pages/Discover.jsx'
 import Nature    from './pages/Nature.jsx'
@@ -44,11 +46,15 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <main>
-        <AnimatedRoutes />
-      </main>
-      <Footer />
+      {/* Nagidos sohbeti tüm sayfalarda ortak: sayfa değişince kaybolmasın */}
+      <ChatProvider>
+        <Navbar />
+        <main>
+          <AnimatedRoutes />
+        </main>
+        <Footer />
+        <NagidosWidget />
+      </ChatProvider>
     </BrowserRouter>
   )
 }

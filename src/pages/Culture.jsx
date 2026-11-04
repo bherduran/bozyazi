@@ -27,31 +27,29 @@ export default function Culture() {
     <PageWrapper>
       <header className="page-header">
         <div className="page-header-inner">
-          <p className="section-label">{t('label')}</p>
           <h1 className="section-title section-title--light">
-            {t('title1')}<br /><em>{t('title2')}</em>
+            {t('title1')} <em>{t('title2')}</em>
           </h1>
           <p className="page-header-desc">{t('desc')}</p>
         </div>
       </header>
       <section className="culture-section section-padding">
-        <div className="culture-grid">
+        <ul className="entry-list">
           {ITEMS.map((item, i) => (
-            <motion.div
+            <motion.li
               key={item.title}
-              className="culture-card"
+              className="entry"
               custom={i}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={cardVariants}
             >
-              <span className="culture-index">0{i + 1}</span>
-              <h2 className="culture-title">{item.title}</h2>
-              <p className="culture-desc">{item.desc}</p>
-            </motion.div>
+              <h2 className="entry-title">{item.title}</h2>
+              <p className="entry-desc">{item.desc}</p>
+            </motion.li>
           ))}
-        </div>
+        </ul>
       </section>
     </PageWrapper>
   )

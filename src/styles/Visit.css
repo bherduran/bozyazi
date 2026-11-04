@@ -1,37 +1,5 @@
 /* Visit.css — Ziyaret & Harita sayfası stilleri */
 
-.visit-section { background: var(--cream); }
-
-.visit-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-}
-
-.visit-card {
-  background: var(--sand);
-  padding: 2.5rem 2rem;
-  border-top: 3px solid transparent;
-  transition: border-color var(--transition), transform var(--transition);
-}
-.visit-card:hover {
-  border-top-color: var(--gold);
-  transform: translateY(-4px);
-}
-.visit-icon { font-size: 2rem; display: block; margin-bottom: 1rem; }
-.visit-card h2 {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: var(--sea);
-  margin-bottom: .8rem;
-}
-.visit-card p {
-  font-size: .78rem;
-  line-height: 1.9;
-  color: var(--muted);
-}
-
 /* ── HARİTA ── */
 .map-section { background: var(--sand); }
 
@@ -55,19 +23,19 @@
   display: inline-flex;
   align-items: center;
   gap: .4rem;
-  font-size: .65rem;
-  letter-spacing: .15em;
-  text-transform: uppercase;
+  font-size: .78rem;
+  letter-spacing: .04em;
   color: var(--muted);
   background: var(--cream);
   padding: .4rem .9rem;
   border: 1px solid rgba(10,37,64,.1);
-  transition: background var(--transition), border-color var(--transition);
 }
-.legend-item:hover {
-  background: var(--sea);
-  color: var(--cream);
-  border-color: var(--sea);
+.legend-item::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold-light);
 }
 
 /* Harita container — sabit yükseklik zorunlu */
@@ -99,11 +67,9 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
-  .visit-grid { grid-template-columns: repeat(2, 1fr); }
   .map-container { height: 420px; }
 }
 @media (max-width: 768px) {
-  .visit-grid { grid-template-columns: 1fr; }
   .map-container { height: 350px; }
   .map-legend { gap: .5rem; }
 }

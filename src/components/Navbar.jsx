@@ -11,12 +11,14 @@
 import { useState, useEffect }          from 'react'
 import { NavLink, Link }                from 'react-router-dom'
 import { useTranslation }               from 'react-i18next'
+import { useLenis }                     from 'lenis/react'
 import '../styles/Navbar.css'
 
 export default function Navbar() {
   const { t, i18n } = useTranslation('common')
   const [isScrolled, setIsScrolled] = useState(false)
   const [isOpen,     setIsOpen]     = useState(false)
+  const lenis = useLenis()
 
   // Dil değiştirme fonksiyonu
   function toggleLang() {
@@ -32,7 +34,6 @@ export default function Navbar() {
     { path: '/doga',    label: t('nav_nature')    },
     { path: '/kultur',  label: t('nav_culture')   },
     { path: '/galeri',  label: t('nav_gallery')   },
-    { path: '/asistan', label: t('nav_assistant') },
     { path: '/ziyaret', label: t('nav_visit')     },
   ]
 
@@ -42,10 +43,12 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Lenis body'deki overflow'a bakmıyor; menü açıkken onu da durduruyoruz
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [isOpen])
+    if (isOpen) lenis?.stop(); else lenis?.start()
+    return () => { document.body.style.overflow = ''; lenis?.start() }
+  }, [isOpen, lenis])
 
   const closeMenu = () => setIsOpen(false)
 

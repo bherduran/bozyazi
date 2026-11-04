@@ -45,7 +45,7 @@
 .gallery-item:hover .gallery-overlay { opacity: 1; }
 
 .gallery-caption {
-  font-size: .7rem;
+  font-size: .72rem;
   letter-spacing: .15em;
   text-transform: uppercase;
   color: var(--cream);
@@ -65,7 +65,7 @@
 }
 .gallery-item:hover .gallery-placeholder { background: var(--azure); }
 
-.placeholder-icon { font-size: 2rem; opacity: .4; }
+.placeholder-icon { color: rgba(244,232,208,.55); }
 .placeholder-num {
   font-family: var(--font-display);
   font-size: 2.5rem;
@@ -74,33 +74,13 @@
   line-height: 1;
 }
 .placeholder-text {
-  font-size: .6rem;
-  letter-spacing: .2em;
+  font-size: .72rem;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: rgba(244,232,208,.25);
+  color: rgba(244,232,208,.72);
 }
 
 /* ── EKLE İPUCU ────────────────────────────────────────────── */
-.gallery-hint { display: none; /* Kullanıcıya gösterilmiyor */
-  margin-top: 3rem;
-  padding: 1.5rem 2rem;
-  background: rgba(10,37,64,.06);
-  border-left: 3px solid var(--gold);
-}
-.gallery-hint p {
-  font-size: .78rem;
-  line-height: 1.8;
-  color: var(--muted);
-}
-.gallery-hint code {
-  background: rgba(10,37,64,.1);
-  padding: .15rem .45rem;
-  border-radius: 3px;
-  font-size: .75rem;
-  color: var(--sea);
-  font-family: 'Courier New', monospace;
-}
-
 /* ── LİGHTBOX ──────────────────────────────────────────────── */
 /*
   position: fixed + inset: 0 → Tam ekranı kaplar.
@@ -158,24 +138,24 @@
   justify-content: center;
   gap: 1rem;
 }
-.lightbox-placeholder span { font-size: 3rem; opacity: .3; }
+.lightbox-placeholder .icon { color: rgba(244,232,208,.45); }
 .lightbox-placeholder p {
   font-size: .75rem;
-  letter-spacing: .2em;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: rgba(244,232,208,.3);
+  color: rgba(244,232,208,.72);
 }
 
 .lightbox-caption {
   font-size: .72rem;
   letter-spacing: .18em;
   text-transform: uppercase;
-  color: rgba(244,232,208,.55);
+  color: rgba(244,232,208,.78);
 }
 
 .lightbox-counter {
-  font-size: .62rem;
-  letter-spacing: .25em;
+  font-size: .72rem;
+  letter-spacing: .18em;
   color: rgba(200,150,62,.6);
 }
 
@@ -185,7 +165,7 @@
   top: -3rem;
   right: 0;
   font-size: 2rem;
-  color: rgba(244,232,208,.5);
+  color: rgba(244,232,208,.72);
   background: none;
   border: none;
   cursor: pointer;
@@ -198,7 +178,7 @@
 /* Önceki / Sonraki butonları */
 .lightbox-nav {
   font-size: 3rem;
-  color: rgba(244,232,208,.4);
+  color: rgba(244,232,208,.72);
   background: none;
   border: none;
   cursor: pointer;

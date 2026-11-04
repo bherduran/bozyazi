@@ -15,12 +15,12 @@ export default function Nature() {
   const { t } = useTranslation('nature')
 
   const ITEMS = [
-    { icon: '🌊', title: t('item1_title'), desc: t('item1_desc') },
-    { icon: '⛰️', title: t('item2_title'), desc: t('item2_desc') },
-    { icon: '🦇', title: t('item3_title'), desc: t('item3_desc') },
-    { icon: '🌿', title: t('item4_title'), desc: t('item4_desc') },
-    { icon: '🍋', title: t('item5_title'), desc: t('item5_desc') },
-    { icon: '🌅', title: t('item6_title'), desc: t('item6_desc') },
+    { title: t('item1_title'), desc: t('item1_desc') },
+    { title: t('item2_title'), desc: t('item2_desc') },
+    { title: t('item3_title'), desc: t('item3_desc') },
+    { title: t('item4_title'), desc: t('item4_desc') },
+    { title: t('item5_title'), desc: t('item5_desc') },
+    { title: t('item6_title'), desc: t('item6_desc') },
   ]
 
   const ACTIVITIES = [
@@ -31,34 +31,31 @@ export default function Nature() {
     <PageWrapper>
       <header className="page-header">
         <div className="page-header-inner">
-          <p className="section-label">{t('label')}</p>
           <h1 className="section-title section-title--light">
-            {t('title1')}<br /><em>{t('title2')}</em>
+            {t('title1')} <em>{t('title2')}</em>
           </h1>
           <p className="page-header-desc">{t('desc')}</p>
         </div>
       </header>
       <section className="nature-section section-padding">
-        <div className="nature-grid">
+        <ul className="entry-list">
           {ITEMS.map((item, i) => (
-            <motion.div
+            <motion.li
               key={item.title}
-              className="nature-card"
+              className="entry"
               custom={i}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={cardVariants}
             >
-              <span className="nature-icon">{item.icon}</span>
-              <h2 className="nature-title">{item.title}</h2>
-              <p className="nature-desc">{item.desc}</p>
-            </motion.div>
+              <h2 className="entry-title">{item.title}</h2>
+              <p className="entry-desc">{item.desc}</p>
+            </motion.li>
           ))}
-        </div>
+        </ul>
       </section>
       <section className="nature-cta section-padding">
-        <p className="section-label">{t('activities_label')}</p>
         <h2 className="section-title">{t('activities_title')}</h2>
         <div className="activities-list">
           {ACTIVITIES.map((a, i) => (

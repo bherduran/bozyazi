@@ -24,10 +24,10 @@
 .footer-logo:hover { color: var(--gold-light); }
 
 .footer-tagline {
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
+  font-size: .72rem;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: rgba(244, 232, 208, 0.35);
+  color: rgba(244, 232, 208, .72);
 }
 
 .footer-nav {
@@ -37,10 +37,10 @@
   gap: 0.5rem;
 }
 .footer-nav a {
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
+  font-size: .72rem;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: rgba(244, 232, 208, 0.45);
+  color: rgba(244, 232, 208, .72);
   transition: color var(--transition);
 }
 .footer-nav a:hover { color: var(--gold-light); }
@@ -49,10 +49,10 @@
   text-align: right;
 }
 .footer-meta p {
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
+  font-size: .72rem;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: rgba(244, 232, 208, 0.35);
+  color: rgba(244, 232, 208, .72);
 }
 .footer-meta span { color: var(--gold); }
 .coords { margin-top: 0.3rem; }
@@ -63,9 +63,9 @@
   border-top: 1px solid rgba(200, 150, 62, 0.08);
 }
 .footer-bottom p {
-  font-size: 0.6rem;
+  font-size: .72rem;
   letter-spacing: 0.15em;
-  color: rgba(244, 232, 208, 0.2);
+  color: rgba(244, 232, 208, .72);
 }
 
 @media (max-width: 768px) {

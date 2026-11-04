@@ -25,7 +25,6 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  scroll-behavior: smooth;
 }
 
 /* Scrollbar stili */
@@ -60,6 +59,9 @@
 .chat-message--user .chat-avatar {
   background: var(--gold);
 }
+/* Asistanın avatarı Nagidos logosu; kendi dairesi var */
+.chat-message--assistant .chat-avatar { background: none; }
+.chat-avatar svg { display: block; }
 
 /* ── MESAJ BALONCUĞU ── */
 .chat-bubble {
@@ -83,6 +85,41 @@
   text-align: right;
 }
 
+/* Asistan cevapları markdown olarak render ediliyor. global.css'teki reset
+   liste işaretlerini ve boşlukları sıfırladığı için burada geri veriyoruz.
+   Renk ve font baloncuktan miras kalıyor. */
+.chat-bubble--markdown > * + * { margin-top: .7em; }
+.chat-bubble--markdown ul,
+.chat-bubble--markdown ol { padding-left: 1.2em; }
+.chat-bubble--markdown ul { list-style: disc; }
+.chat-bubble--markdown ol { list-style: decimal; }
+.chat-bubble--markdown li + li { margin-top: .35em; }
+.chat-bubble--markdown li::marker { color: var(--gold-light); }
+.chat-bubble--markdown li > p { margin: 0; }
+.chat-bubble--markdown strong { font-weight: 400; color: var(--gold-light); }
+.chat-bubble--markdown em { font-style: italic; }
+.chat-bubble--markdown h1,
+.chat-bubble--markdown h2,
+.chat-bubble--markdown h3,
+.chat-bubble--markdown h4 {
+  font-family: inherit;
+  font-size: 1em;
+  font-weight: 400;
+  color: var(--gold-light);
+}
+.chat-bubble--markdown a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
+.chat-bubble--markdown code {
+  font-size: .92em;
+  background: rgba(250,246,239,.1);
+  padding: .1em .35em;
+  border-radius: 2px;
+}
+
 /* Yükleniyor — üç nokta animasyonu */
 .chat-bubble--loading {
   display: flex;
@@ -94,22 +131,23 @@
   width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--gold-light);
-  animation: dotBounce 1.2s ease-in-out infinite;
+  animation: dotPulse 1.2s ease-in-out infinite;
 }
 .dot:nth-child(2) { animation-delay: .2s; }
 .dot:nth-child(3) { animation-delay: .4s; }
-@keyframes dotBounce {
+@keyframes dotPulse {
   0%, 80%, 100% { transform: scale(0.7); opacity: .4; }
   40%           { transform: scale(1);   opacity: 1;  }
 }
 
 /* Hata mesajı */
 .chat-error {
-  background: rgba(180,40,40,.1);
-  border-left: 3px solid #b42828;
-  padding: .8rem 1rem;
-  font-size: .75rem;
-  color: #b42828;
+  align-self: center;
+  background: rgba(180,40,40,.08);
+  border: 1px solid rgba(180,40,40,.25);
+  padding: .7rem 1rem;
+  font-size: .8rem;
+  color: #9c2323;
 }
 
 /* ── INPUT ALANI ── */
@@ -140,9 +178,11 @@
 
 .chat-send {
   width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--sea);
   color: var(--gold-light);
-  font-size: 1.3rem;
   border: none;
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
@@ -151,6 +191,19 @@
 .chat-send:hover:not(:disabled) { background: var(--azure); color: var(--cream); }
 .chat-send:disabled { opacity: .4; cursor: not-allowed; }
 .chat-send.loading { cursor: wait; }
+/* Gönderiliyor: ok yerine dönen ince bir halka */
+.chat-spinner {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.6px solid rgba(232,184,109,.3);
+  border-top-color: var(--gold-light);
+  animation: chatSpin .9s linear infinite;
+}
+@keyframes chatSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .chat-spinner { animation-duration: 2.4s; } }
+
+/* Kullanıcı avatarı: emoji yerine çizgi ikon */
+.chat-message--user .chat-avatar { color: var(--deep); }
 
 /* ── ÖRNEK SORULAR ── */
 .chat-suggestions {
@@ -162,7 +215,7 @@
 
 .suggestion-btn {
   font-family: var(--font-body);
-  font-size: .65rem;
+  font-size: .72rem;
   letter-spacing: .12em;
   color: var(--muted);
   background: var(--cream);
@@ -183,5 +236,5 @@
 @media (max-width: 768px) {
   .chat-messages { min-height: 320px; max-height: 400px; padding: 1.2rem; }
   .chat-bubble { max-width: 88%; font-size: .78rem; }
-  .suggestion-btn { font-size: .6rem; padding: .45rem .8rem; }
+  .suggestion-btn { font-size: .72rem; padding: .45rem .8rem; }
 }

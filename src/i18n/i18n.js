@@ -52,4 +52,9 @@ i18n
     },
   })
 
+// <html lang> dile göre güncellensin. Sabit "tr" kalınca İngilizce metinler
+// büyük harfe çevrilirken Türkçe kurala göre "DİSCOVER", "VİSİT" oluyordu.
+document.documentElement.lang = i18n.language
+i18n.on('languageChanged', lng => { document.documentElement.lang = lng })
+
 export default i18n

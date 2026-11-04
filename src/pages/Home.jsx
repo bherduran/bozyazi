@@ -2,6 +2,9 @@ import { Link }              from 'react-router-dom'
 import { useTranslation }    from 'react-i18next'
 import { motion }            from 'framer-motion'
 import PageWrapper           from '../components/PageWrapper.jsx'
+import HeroSeaLoader         from '../components/HeroSeaLoader.jsx'
+import useTilt               from '../hooks/useTilt.js'
+import Icon                  from '../components/Icon.jsx'
 import '../styles/Home.css'
 
 // Kart animasyonu için variant — stagger (sıralı) animasyon
@@ -17,7 +20,6 @@ export default function Home() {
   return (
     <PageWrapper>
       <Hero />
-      <Ticker />
       <About />
       <PreviewGrid />
     </PageWrapper>
@@ -28,13 +30,11 @@ function Hero() {
   const { t } = useTranslation('home')
   return (
     <section className="hero">
-      <div className="hero-bg">
-        {[...Array(5)].map((_, i) => (
-          <span key={i} className={`particle particle--${i + 1}`} />
-        ))}
-      </div>
+      <div className="hero-bg" />
+      {/* 3D deniz ve Nagidos Adası. Desteklenmeyen cihazlarda hiç yüklenmez,
+          yukarıdaki CSS arka planı ve aşağıdaki SVG dalgalar kalır. */}
+      <HeroSeaLoader />
       <div className="hero-content">
-        <p className="hero-eyebrow">{t('eyebrow')}</p>
         <h1 className="hero-title">
           {t('hero_title1')}<br />
           <em>{t('hero_title2')}</em><br />
@@ -42,7 +42,7 @@ function Hero() {
         </h1>
         <p className="hero-sub">{t('hero_sub')}</p>
         <Link to="/kesifet" className="hero-cta">
-          {t('hero_cta')} <span>→</span>
+          {t('hero_cta')} <Icon name="arrowRight" size={16} />
         </Link>
       </div>
       <div className="hero-waves">
@@ -51,21 +51,7 @@ function Hero() {
           <path className="wave wave--2" d="M0,100 C180,60 360,140 540,100 C720,60 900,140 1080,100 C1260,60 1440,140 1620,100 C1800,60 1980,140 2160,100 L2160,180 L0,180 Z"/>
         </svg>
       </div>
-      <p className="scroll-hint">{t('scroll')}</p>
     </section>
-  )
-}
-
-function Ticker() {
-  const { i18n } = useTranslation()
-  const words = i18n.language === 'tr'
-    ? ['Akdeniz Kıyısı', 'Antik Kentler', 'Berrak Sular', 'Toros Dağları', 'Narenciye Bahçeleri', 'Softa Kalesi', 'Nagidos']
-    : ['Mediterranean Coast', 'Ancient Ruins', 'Crystal Waters', 'Taurus Mountains', 'Citrus Groves', 'Softa Castle', 'Nagidos']
-  const text = [...words, ...words].join(' · ')
-  return (
-    <div className="ticker" aria-hidden="true">
-      <span>{text} · </span>
-    </div>
   )
 }
 
@@ -80,29 +66,20 @@ function About() {
   return (
     <section className="about section-padding">
       <div className="about-text">
-        <p className="section-label">{t('about_label')}</p>
         <h2 className="section-title">
-          {t('about_title1')}<br /><em>{t('about_title2')}</em>
+          {t('about_title1')} <em>{t('about_title2')}</em>
         </h2>
-        <div className="gold-bar" />
         <p>{t('about_p1')}</p>
         <p>{t('about_p2')}</p>
-        <div className="stats-grid">
-          {STATS.map((s, i) => (
-            <motion.div
-              key={s.label}
-              className="stat-card"
-              custom={i}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={cardVariants}
-            >
-              <span className="stat-num">{s.num}</span>
-              <span className="stat-label">{s.label}</span>
-            </motion.div>
+        {/* Kutu kutu istatistik kartları yerine sade bir bilgi satırı */}
+        <dl className="facts">
+          {STATS.map(s => (
+            <div key={s.label} className="fact">
+              <dt>{s.label}</dt>
+              <dd>{s.num}</dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </div>
       <blockquote className="about-quote">
         <p>{t('quote')}</p>
@@ -122,29 +99,36 @@ function PreviewGrid() {
   ]
   return (
     <section className="preview-section section-padding">
-      <p className="section-label">{t('preview_label')}</p>
       <h2 className="section-title">
-        {t('preview_title1')}<br /><em>{t('preview_title2')}</em>
+        {t('preview_title1')} <em>{t('preview_title2')}</em>
       </h2>
       <div className="preview-grid">
         {PREVIEWS.map((p, i) => (
-          <motion.div
-            key={p.to}
-            custom={i}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={cardVariants}
-          >
-            <Link to={p.to} className="preview-card" style={{ '--card-color': p.color }}>
-              <span className="preview-tag">{p.tag}</span>
-              <h3 className="preview-title">{p.title}</h3>
-              <p className="preview-desc">{p.desc}</p>
-              <span className="preview-arrow">→</span>
-            </Link>
-          </motion.div>
+          <PreviewCard key={p.to} preview={p} index={i} />
         ))}
       </div>
     </section>
+  )
+}
+
+function PreviewCard({ preview: p, index }) {
+  const tilt = useTilt(5)
+  return (
+    <motion.div
+      custom={index}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={cardVariants}
+      style={tilt.style}
+      {...tilt.handlers}
+    >
+      <Link to={p.to} className="preview-card" style={{ '--card-color': p.color }}>
+        <span className="preview-tag">{p.tag}</span>
+        <h3 className="preview-title">{p.title}</h3>
+        <p className="preview-desc">{p.desc}</p>
+        <Icon name="arrowRight" size={20} className="preview-arrow" />
+      </Link>
+    </motion.div>
   )
 }

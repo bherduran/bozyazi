@@ -22,25 +22,18 @@
   to   { background-position: 100% 50%; }
 }
 
-/* Partiküller */
-.particle {
+/* 3D deniz (HeroSea). Arka plan gradyanının üstünde, metnin altında.
+   Tuval hazır olunca yavaşça beliriyor. */
+.hero-sea {
   position: absolute;
-  border-radius: 50%;
-  background: var(--gold);
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
   opacity: 0;
-  animation: floatUp 9s ease-in-out infinite;
+  transition: opacity 1.8s ease;
 }
-.particle--1 { width:4px; height:4px; left:15%; bottom:30%; animation-delay:0s;   animation-duration:9s;  }
-.particle--2 { width:3px; height:3px; left:28%; bottom:20%; animation-delay:2s;   animation-duration:11s; }
-.particle--3 { width:5px; height:5px; left:45%; bottom:40%; animation-delay:4s;   animation-duration:8s;  }
-.particle--4 { width:3px; height:3px; left:62%; bottom:25%; animation-delay:1s;   animation-duration:13s; }
-.particle--5 { width:4px; height:4px; left:78%; bottom:35%; animation-delay:3s;   animation-duration:10s; }
-
-@keyframes floatUp {
-  0%   { opacity: 0; transform: translateY(0) scale(1); }
-  20%  { opacity: .6; }
-  100% { opacity: 0; transform: translateY(-120px) scale(.4); }
-}
+.hero-sea.is-ready { opacity: 1; }
+.hero-sea-canvas { width: 100%; height: 100%; }
 
 .hero-content {
   position: relative;
@@ -49,28 +42,9 @@
   max-width: 860px;
 }
 
-.hero-eyebrow {
-  font-size: .65rem;
-  letter-spacing: .35em;
-  text-transform: uppercase;
-  color: var(--gold-light);
-  margin-bottom: 1.4rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  opacity: 0;
-  animation: fadeUp .8s .3s forwards;
-}
-.hero-eyebrow::before {
-  content: '';
-  width: 40px; height: 1px;
-  background: var(--gold);
-  flex-shrink: 0;
-}
-
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(3.2rem, 8vw, 6.5rem);
+  font-size: clamp(3.2rem, 8vw, 6rem);
   font-weight: 300;
   line-height: 1.05;
   color: var(--cream);
@@ -86,7 +60,7 @@
   margin-top: 1.6rem;
   font-size: .82rem;
   letter-spacing: .12em;
-  color: rgba(244,232,208,.65);
+  color: rgba(244,232,208,.78);
   line-height: 1.9;
   max-width: 480px;
   opacity: 0;
@@ -98,8 +72,8 @@
   display: inline-flex;
   align-items: center;
   gap: .8rem;
-  font-size: .7rem;
-  letter-spacing: .28em;
+  font-size: .72rem;
+  letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--cream);
   border-bottom: 1px solid var(--gold);
@@ -109,8 +83,8 @@
   animation: fadeUp .9s 1s forwards;
 }
 .hero-cta:hover { color: var(--gold-light); border-bottom-color: var(--gold-light); }
-.hero-cta span { display: inline-block; transition: transform var(--transition); }
-.hero-cta:hover span { transform: translateX(5px); }
+.hero-cta .icon { transition: transform var(--transition); }
+.hero-cta:hover .icon { transform: translateX(5px); }
 
 /* Dalgalar */
 .hero-waves {
@@ -124,47 +98,6 @@
 .wave--1 { fill: rgba(244,232,208,.07); }
 .wave--2 { fill: rgba(200,150,62,.07); animation-duration: 11s; animation-direction: reverse; }
 @keyframes waveMove {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-.scroll-hint {
-  position: absolute;
-  bottom: 2rem; right: 3rem;
-  writing-mode: vertical-rl;
-  font-size: .6rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: rgba(244,232,208,.35);
-  display: flex;
-  align-items: center;
-  gap: .7rem;
-  animation: pulse 2.5s ease-in-out infinite;
-  z-index: 2;
-}
-.scroll-hint::after {
-  content: '';
-  width: 1px; height: 45px;
-  background: rgba(200,150,62,.35);
-}
-@keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:.9} }
-
-/* ── TİCKER ─────────────────────────────────────────────────── */
-.ticker {
-  background: var(--gold);
-  padding: .8rem 0;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.ticker span {
-  display: inline-block;
-  font-size: .62rem;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-  color: var(--deep);
-  animation: ticker 30s linear infinite;
-}
-@keyframes ticker {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
@@ -185,33 +118,32 @@
   margin-top: 1.2rem;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
+.facts {
   margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  justify-content: start;
+  column-gap: 2.5rem;
+  row-gap: 1.4rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(10,37,64,.12);
 }
-.stat-card {
-  background: var(--sea);
-  padding: 1.8rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: .4rem;
-  transition: background var(--transition);
-}
-.stat-card:hover { background: var(--azure); }
-.stat-num {
+/* Rakam üstte, etiket altta; etiket iki satıra taşsa da rakamlar aynı hizada */
+.fact { display: flex; flex-direction: column; gap: .35rem; }
+.fact dd { order: -1; }
+.fact dd {
   font-family: var(--font-display);
-  font-size: 2.6rem;
+  font-size: 2.2rem;
   font-weight: 300;
-  color: var(--gold-light);
   line-height: 1;
+  color: var(--sea);
+  font-variant-numeric: lining-nums tabular-nums;
 }
-.stat-label {
-  font-size: .58rem;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: rgba(244,232,208,.5);
+.fact dt {
+  font-size: .78rem;
+  line-height: 1.4;
+  color: var(--muted);
+  max-width: 14ch;
 }
 
 .about-quote {
@@ -219,16 +151,6 @@
   padding: 3.5rem 3rem;
   position: relative;
   overflow: hidden;
-}
-.about-quote::before {
-  content: '"';
-  position: absolute;
-  top: -1rem; left: 1rem;
-  font-family: var(--font-display);
-  font-size: 10rem;
-  color: rgba(200,150,62,.08);
-  line-height: 1;
-  pointer-events: none;
 }
 .about-quote p {
   font-family: var(--font-display);
@@ -241,10 +163,10 @@
 .about-quote strong { color: var(--gold-light); font-weight: 400; }
 .about-quote footer {
   margin-top: 1.8rem;
-  font-size: .6rem;
-  letter-spacing: .28em;
+  font-size: .72rem;
+  letter-spacing: .18em;
   text-transform: uppercase;
-  color: rgba(244,232,208,.35);
+  color: rgba(244,232,208,.72);
   background: none;
   border: none;
   padding: 0;
@@ -262,7 +184,11 @@
   margin-top: 3rem;
 }
 
+/* Izgara dıştaki animasyon kutusunu eşit boya uzatıyor; kart (link) da onu
+   doldursun, yoksa kısa açıklamalı kart daha kısa kalıyor */
+.preview-grid > * { display: flex; }
 .preview-card {
+  flex: 1;
   background: var(--card-color, var(--sea));
   padding: 2.5rem 2rem;
   display: flex;
@@ -276,16 +202,19 @@
   content: '';
   position: absolute;
   bottom: 0; left: 0;
-  width: 0; height: 3px;
+  width: 100%; height: 3px;
   background: var(--gold);
-  transition: width 0.4s ease;
+  /* width yerine scaleX: layout'u yeniden hesaplatmadan aynı görünüm */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
 }
-.preview-card:hover::after { width: 100%; }
+.preview-card:hover::after { transform: scaleX(1); }
 .preview-card:hover { transform: translateY(-4px); }
 
 .preview-tag {
-  font-size: .58rem;
-  letter-spacing: .28em;
+  font-size: .72rem;
+  letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--gold-light);
 }
@@ -296,13 +225,12 @@
   color: var(--cream);
 }
 .preview-desc {
-  font-size: .72rem;
+  font-size: .8rem;
   line-height: 1.8;
-  color: rgba(244,232,208,.5);
+  color: rgba(244,232,208,.78);
   flex: 1;
 }
 .preview-arrow {
-  font-size: 1.2rem;
   color: var(--gold);
   align-self: flex-end;
   transition: transform var(--transition);
@@ -317,8 +245,7 @@
 
 @media (max-width: 768px) {
   .hero-content { padding: 0 1.5rem 5rem; }
-  .scroll-hint { display: none; }
   .about { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .facts { grid-template-columns: repeat(2, auto); }
   .preview-grid { grid-template-columns: 1fr; }
 }

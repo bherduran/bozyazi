@@ -1,0 +1,194 @@
+/* NagidosWidget.css — Sağ alttaki Nagidos rehber penceresi
+   z-index: Navbar (1000) ve hamburger (1100) üstünde, galeri
+   lightbox'ının (2000) altında. */
+
+.nagidos-widget {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .9rem;
+  pointer-events: none;
+}
+.nagidos-widget > * { pointer-events: auto; }
+
+/* ── AÇMA BUTONU ── */
+.nagidos-launcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(6,24,36,.35), 0 2px 6px rgba(6,24,36,.25);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.nagidos-launcher-mark { display: block; }
+.nagidos-launcher:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(6,24,36,.4), 0 2px 6px rgba(6,24,36,.25); }
+.nagidos-launcher:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; }
+
+/* Yavaş, sakin bir halka: "buradayım" */
+.nagidos-launcher::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  opacity: 0;
+  animation: nagidosRing 3.6s ease-out infinite;
+  pointer-events: none;
+}
+.nagidos-launcher.is-open::after { animation: none; }
+@keyframes nagidosRing {
+  0%   { transform: scale(.92); opacity: .7; }
+  70%  { transform: scale(1.25); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Hover'da soldan çıkan etiket */
+.nagidos-launcher-label {
+  position: absolute;
+  right: calc(100% + .8rem);
+  white-space: nowrap;
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: var(--sea);
+  padding: .55rem .9rem;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity var(--transition), transform var(--transition);
+  pointer-events: none;
+}
+.nagidos-launcher:hover .nagidos-launcher-label,
+.nagidos-launcher:focus-visible .nagidos-launcher-label { opacity: 1; transform: none; }
+.nagidos-launcher.is-open .nagidos-launcher-label { display: none; }
+
+/* Oturumda bir kez gösterilen "bana sor" baloncuğu */
+.nagidos-teaser {
+  font-family: var(--font-body);
+  font-size: .72rem;
+  letter-spacing: .04em;
+  color: var(--text);
+  background: var(--cream);
+  border: 1px solid rgba(200,150,62,.4);
+  padding: .75rem 1rem;
+  box-shadow: 0 8px 24px rgba(6,24,36,.18);
+  margin-right: .4rem;
+}
+
+/* ── PANEL ── */
+.nagidos-panel {
+  width: 380px;
+  height: min(600px, calc(100vh - var(--nav-height) - 7.5rem));
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  border: 1px solid rgba(10,37,64,.12);
+  box-shadow: 0 24px 60px rgba(6,24,36,.3);
+  transform-origin: bottom right;
+  overflow: hidden;
+}
+
+.nagidos-panel-header {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding: .9rem 1rem .9rem 1.1rem;
+  background: var(--deep);
+  border-bottom: 2px solid var(--gold);
+  flex-shrink: 0;
+}
+.nagidos-panel-title { flex: 1; display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
+.nagidos-panel-title strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--cream);
+  line-height: 1;
+}
+.nagidos-panel-title span {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(244,232,208,.78);
+}
+.nagidos-status {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #5fb98a;
+  flex-shrink: 0;
+}
+.nagidos-status.is-typing { background: var(--gold-light); animation: dotPulse 1.2s ease-in-out infinite; }
+
+.nagidos-close {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(244,232,208,.78);
+  transition: color var(--transition), background var(--transition);
+}
+.nagidos-close:hover { color: var(--cream); background: rgba(250,246,239,.08); }
+.nagidos-close:focus-visible { outline: 1px solid var(--gold-light); }
+
+/* ── PANEL İÇİNDE SOHBET ── */
+.chat-container--widget {
+  flex: 1;
+  min-height: 0;
+  max-width: none;
+  margin: 0;
+}
+.chat-container--widget .chat-messages {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  border: none;
+  padding: 1.2rem 1rem;
+  gap: 1.1rem;
+  overscroll-behavior: contain;
+}
+.chat-container--widget .chat-message { gap: .65rem; }
+.chat-container--widget .chat-avatar { width: 30px; height: 30px; }
+.chat-container--widget .chat-avatar svg { width: 30px; height: 30px; }
+.chat-container--widget .chat-bubble { max-width: 84%; font-size: .78rem; line-height: 1.75; padding: .85rem 1rem; }
+.chat-container--widget .chat-input-area { border-left: none; border-right: none; border-bottom: none; }
+.chat-container--widget .chat-input { padding: 1rem 1.1rem; font-size: .78rem; }
+
+.chat-suggestions--inline {
+  margin-top: 0;
+  padding-left: calc(30px + .65rem);
+}
+.chat-suggestions--inline .suggestion-btn { background: transparent; }
+
+/* ── MOBİL: TAM EKRAN ── */
+@media (max-width: 640px) {
+  .nagidos-widget { right: 1rem; bottom: 1rem; }
+  .nagidos-launcher { width: 54px; height: 54px; }
+  .nagidos-launcher-mark { width: 54px; height: 54px; }
+  .nagidos-launcher-label { display: none; }
+
+  .nagidos-panel {
+    position: fixed;
+    inset: 0;
+    width: auto;
+    height: auto;
+    height: 100dvh;
+    border: none;
+    box-shadow: none;
+    transform-origin: bottom center;
+  }
+  .nagidos-panel-header { padding-top: max(.9rem, env(safe-area-inset-top)); }
+  .chat-container--widget .chat-input-area { padding-bottom: env(safe-area-inset-bottom); }
+  /* iOS, 16px'ten küçük input'a odaklanınca sayfayı yakınlaştırır */
+  .chat-container--widget .chat-input { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nagidos-launcher::after { animation: none; }
+}
