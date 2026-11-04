@@ -34,6 +34,10 @@ export function ChatProvider({ children }) {
     setIsBusy(true)
     setError(null)
 
+    // Cevap bir şekilde yarıda takılırsa input sonsuza kadar kilitli kalmasın
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 60_000)
+
     try {
       // Açılış mesajı bize ait, geçmişe dahil etmiyoruz.
       // Geçmişi kısaltma ve rol dönüşümü sunucuda yapılıyor.
@@ -43,6 +47,7 @@ export function ChatProvider({ children }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed, history, lang: i18n.language }),
+        signal: controller.signal,
       })
 
       if (!response.ok) {
@@ -72,8 +77,10 @@ export function ChatProvider({ children }) {
       if (!reply) throw new Error('empty_response')
     } catch (err) {
       console.error('Sohbet hatası:', err)
-      setError(err.message === 'rate_limited' ? t('error_rate_limit') : t('error'))
+      const key = { rate_limited: 'error_rate_limit', busy: 'error_busy', AbortError: 'error_busy' }
+      setError(t(key[err.message] ?? key[err.name] ?? 'error'))
     } finally {
+      clearTimeout(timer)
       setIsLoading(false)
       setIsBusy(false)
     }

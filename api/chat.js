@@ -15,8 +15,9 @@ const MAX_HISTORY = 10
 
 const MAX_MESSAGE_LENGTH = 1000
 
-// En fazla kaç deneme ve ilk bekleme süresi (ms). Her denemede ikiye katlanır.
-const MAX_RETRIES = 3
+// İlk denemeden sonra en fazla kaç tekrar ve ilk bekleme süresi (ms). Her
+// denemede ikiye katlanır. En kötü durumda ~27 saniyede vazgeçiyoruz.
+const MAX_RETRIES = 2
 const BASE_DELAY_MS = 1000
 
 const SYSTEM_PROMPT_TR = `Sen Nagidos'sun: Bozyazı'nın resmi dijital rehberi.
@@ -95,33 +96,98 @@ function isRateLimited(ip) {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
-// Cevabı akış (SSE) olarak istiyoruz: Gemini metni ürettikçe parça parça
-// gönderiyor, biz de tarayıcıya anında iletiyoruz. Tamamının bitmesini
-// beklemek kullanıcıya birkaç saniyelik boş bekleme olarak yansıyordu.
-async function callGemini(body, attempt = 0) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse&key=${process.env.GEMINI_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+// Gemini bazen isteği kabul edip ilk kelimeyi çok geç gönderiyor (canlıda
+// 69 saniyeyi gördük) ya da 503 dönüyor. İlk parça bu süre içinde gelmezse
+// isteği iptal edip yeniden deniyoruz; ikinci deneme genelde hızlı geçiyor.
+const FIRST_CHUNK_TIMEOUT_MS = 8000
+
+// Gemini'nin SSE akışını olay olay okur. Her olay bir JSON; olaylar boş
+// satırla ayrılıyor ve ağdan gelen paketler olayları ortadan bölebiliyor.
+async function* readEvents(response) {
+  const reader  = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) return
+    buffer += decoder.decode(value, { stream: true })
+    const events = buffer.split(/\r?\n\r?\n/)
+    buffer = events.pop()
+    for (const event of events) {
+      const data = event.split(/\r?\n/)
+        .filter(line => line.startsWith('data:'))
+        .map(line => line.slice(5).trim())
+        .join('')
+      if (!data) continue
+      try { yield JSON.parse(data) } catch { /* bozuk olay: atla */ }
     }
-  )
-
-  // 429 (çok fazla istek) ve 5xx (sunucu hatası) geçici olabilir, tekrar dene.
-  const retryable = response.status === 429 || response.status >= 500
-  if (retryable && attempt < MAX_RETRIES) {
-    // Exponential backoff: 1s, 2s, 4s. Sabit beklemek yerine her seferinde
-    // ikiye katlıyoruz ki yükü zaten fazla olan servisi daha da zorlamayalım.
-    // Üstüne küçük bir rastgelelik (jitter) ekliyoruz; aynı anda beklemeye
-    // giren istemciler aynı anda geri dönmesin.
-    const delay = BASE_DELAY_MS * 2 ** attempt + Math.random() * 250
-    console.warn(`Gemini ${response.status}, ${Math.round(delay)} ms sonra tekrar (deneme ${attempt + 1})`)
-    await sleep(delay)
-    return callGemini(body, attempt + 1)
   }
+}
 
-  return response
+// Bir olaydaki kullanıcıya gösterilecek metin (düşünme parçaları hariç)
+const eventText = ev =>
+  (ev.candidates?.[0]?.content?.parts ?? []).filter(p => !p.thought && p.text).map(p => p.text).join('')
+
+// Akışı açar ve ilk metin parçası gelene kadar bekler. Dönüş:
+//   { events, firstText }  akış başladı, kalan olaylar events'ten okunur
+//   { status, detail }     Gemini kalıcı bir hata döndü (ör. 400)
+//   { busy: true }         tüm denemeler 503/429 ya da zaman aşımıyla bitti
+async function openStream(body) {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      // Exponential backoff + jitter: 1s, 2s, 4s civarı
+      await sleep(BASE_DELAY_MS * 2 ** (attempt - 1) + Math.random() * 250)
+    }
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), FIRST_CHUNK_TIMEOUT_MS)
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse&key=${process.env.GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        }
+      )
+      // 429 (çok fazla istek) ve 5xx (sunucu hatası) geçici olabilir, tekrar dene
+      if (response.status === 429 || response.status >= 500) {
+        clearTimeout(timer)
+        console.warn(`Gemini ${response.status}, tekrar denenecek (deneme ${attempt + 1})`)
+        continue
+      }
+      if (!response.ok) {
+        clearTimeout(timer)
+        return { status: response.status, detail: await response.text() }
+      }
+      const events = readEvents(response)
+      const meta = { usage: null, modelVersion: null }
+      // for await kullanmıyoruz: döngüden return ile çıkmak generator'ı
+      // kapatır ve cevabın geri kalanı kaybolurdu. next() ile elle okuyoruz.
+      while (true) {
+        const { done, value: ev } = await events.next()
+        if (done) break
+        if (ev.usageMetadata) meta.usage = ev.usageMetadata
+        if (ev.modelVersion)  meta.modelVersion = ev.modelVersion
+        const text = eventText(ev)
+        if (text) {
+          clearTimeout(timer)
+          return { events, firstText: text, meta, attempts: attempt + 1 }
+        }
+      }
+      // Akış metin olmadan bitti (ör. güvenlik filtresi)
+      clearTimeout(timer)
+      return { status: 200, detail: 'empty' }
+    } catch (err) {
+      clearTimeout(timer)
+      if (err.name === 'AbortError') {
+        console.warn(`Gemini ${FIRST_CHUNK_TIMEOUT_MS} ms içinde cevaba başlamadı, tekrar denenecek (deneme ${attempt + 1})`)
+        continue
+      }
+      throw err
+    }
+  }
+  return { busy: true }
 }
 
 export default async function handler(req, res) {
@@ -169,7 +235,7 @@ export default async function handler(req, res) {
   let streaming = false
 
   try {
-    const response = await callGemini({
+    const stream = await openStream({
       // Sistem promptunu sahte bir ilk mesaj olarak değil, API'nin bunun
       // için ayırdığı alanla gönderiyoruz.
       systemInstruction: { parts: [{ text: systemPrompt }] },
@@ -177,76 +243,48 @@ export default async function handler(req, res) {
       generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
     })
 
-    if (!response.ok) {
-      const detail = await response.text()
-      console.error('Gemini hatası:', response.status, detail.slice(0, 500))
+    if (stream.busy) {
+      console.error(`Gemini cevap vermedi, ${Date.now() - startedAt} ms sonra vazgeçildi`)
+      return res.status(503).json({ error: 'busy' })
+    }
+    if (!stream.events) {
+      if (stream.detail === 'empty') {
+        // Güvenlik filtresine takılmış ya da boş dönmüş olabilir.
+        console.warn('Boş cevap')
+        return res.status(502).json({ error: 'empty_response' })
+      }
+      console.error('Gemini hatası:', stream.status, stream.detail.slice(0, 500))
       // Yukarı akış hatasının detayını istemciye sızdırmıyoruz.
       return res.status(502).json({ error: 'upstream_error' })
     }
 
-    // Gemini'nin SSE akışını okuyup sadece metin parçalarını düz metin olarak
-    // iletiyoruz. İstemci bunları geldikçe baloncuğa ekliyor.
-    const reader  = response.body.getReader()
-    const decoder = new TextDecoder()
-    let buffer = ''
-    let sent   = 0
-    let firstChunkMs = null
-    let usage = null, modelVersion = null
+    // Akış başladı: metni geldikçe düz metin olarak iletiyoruz
+    streaming = true
+    res.status(200)
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    res.setHeader('Cache-Control', 'no-cache, no-transform')
+    res.setHeader('X-Accel-Buffering', 'no')
+    const firstChunkMs = Date.now() - startedAt
+    res.write(stream.firstText)
+    let sent = stream.firstText.length
 
-    const writeText = text => {
-      if (!streaming) {
-        streaming = true
-        res.status(200)
-        res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-        res.setHeader('Cache-Control', 'no-cache, no-transform')
-        res.setHeader('X-Accel-Buffering', 'no')
-        firstChunkMs = Date.now() - startedAt
-      }
-      res.write(text)
-      sent += text.length
+    for await (const ev of stream.events) {
+      if (ev.usageMetadata) stream.meta.usage = ev.usageMetadata
+      if (ev.modelVersion)  stream.meta.modelVersion = ev.modelVersion
+      const text = eventText(ev)
+      if (text) { res.write(text); sent += text.length }
     }
 
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      buffer += decoder.decode(value, { stream: true })
-
-      // SSE olayları boş satırla ayrılıyor; yarım kalan son olayı tamponda tut
-      const events = buffer.split(/\r?\n\r?\n/)
-      buffer = events.pop()
-      for (const event of events) {
-        const data = event.split(/\r?\n/)
-          .filter(line => line.startsWith('data:'))
-          .map(line => line.slice(5).trim())
-          .join('')
-        if (!data) continue
-        let parsed
-        try { parsed = JSON.parse(data) } catch { continue }
-        // Son olayda kullanım bilgisi geliyor: model, düşünme token'ları vb.
-        if (parsed.usageMetadata) usage = parsed.usageMetadata
-        if (parsed.modelVersion)  modelVersion = parsed.modelVersion
-        const parts = parsed.candidates?.[0]?.content?.parts ?? []
-        // Düşünme (thought) parçalarını kullanıcıya göstermiyoruz
-        const text = parts.filter(p => !p.thought && p.text).map(p => p.text).join('')
-        if (text) writeText(text)
-      }
-    }
-
-    if (!sent) {
-      // Güvenlik filtresine takılmış ya da boş dönmüş olabilir.
-      console.warn('Boş cevap:', buffer.slice(0, 500))
-      return res.status(502).json({ error: 'empty_response' })
-    }
-
+    const { usage, modelVersion } = stream.meta
     console.log(
-      `chat: ilk parça ${firstChunkMs} ms, toplam ${Date.now() - startedAt} ms, ${sent} karakter,`,
+      `chat: ilk parça ${firstChunkMs} ms (deneme ${stream.attempts}), toplam ${Date.now() - startedAt} ms, ${sent} karakter,`,
       `model=${modelVersion ?? MODEL} girdi=${usage?.promptTokenCount} düşünme=${usage?.thoughtsTokenCount ?? 0} çıktı=${usage?.candidatesTokenCount}`
     )
     return res.end()
   } catch (err) {
     console.error('chat handler hatası:', err)
     // Akış başladıysa durum kodu artık değiştirilemez; bağlantıyı kapatmak
-    // yeterli, istemci yarım kalan cevabı ve hatayı gösteriyor.
+    // yeterli, istemci yarım kalan cevabı gösteriyor.
     if (streaming) return res.end()
     return res.status(500).json({ error: 'internal_error' })
   }
